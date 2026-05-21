@@ -25,7 +25,7 @@ const Icon = {
   pin: '<path d="m15 4 5 5-4 1-4 7-3-3 7-4-1-6ZM9 14l-5 5"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   send: '<path d="M12 19V5M5 12l7-7 7 7"/>',
-  publish: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/>',
+  save: '<path d="M5 3h12l2 2v16H5V3Z"/><path d="M8 3v6h8V3"/><path d="M8 21v-7h8v7"/>',
   arrowDownRight: '<path d="M7 7h10v10M7 17 17 7"/>',
   eye: '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/>',
   edit: '<path d="m14.5 4.5 5 5L8 21l-5 1 1-5L15.5 5.5Z"/><path d="m13 7 4 4"/>',
@@ -574,9 +574,9 @@ function ChatThread({ mode = "sidebar" } = {}) {
                             <span>Edit</span>
                           </button>
                         </div>
-                        <button class="chat-output-action chat-output-action--publish" type="button" data-action="publish-chat-output" data-artifact-id="${message.artifactId}">
-                          ${svgIcon("publish", 14)}
-                          <span>Publish</span>
+                        <button class="chat-output-action chat-output-action--save" type="button" data-action="save-chat-output" data-artifact-id="${message.artifactId}">
+                          ${svgIcon("save", 14)}
+                          <span>Save</span>
                         </button>
                       </div>
                     `
@@ -1749,7 +1749,7 @@ function bindLayoutInteractions() {
     });
   });
 
-  document.querySelectorAll('[data-action="publish-chat-output"]').forEach((button) => {
+  document.querySelectorAll('[data-action="save-chat-output"]').forEach((button) => {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
     });

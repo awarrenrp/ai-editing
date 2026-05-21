@@ -2088,7 +2088,7 @@ button {
   color: var(--text);
 }
 
-.chat-output-action--publish {
+.chat-output-action--save {
   margin-left: auto;
 }
 
