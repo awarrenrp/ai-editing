@@ -575,7 +575,6 @@ function ChatThread({ mode = "sidebar" } = {}) {
                           </button>
                         </div>
                         <button class="chat-output-action chat-output-action--save" type="button" data-action="save-chat-output" data-artifact-id="${message.artifactId}">
-                          ${svgIcon("save", 14)}
                           <span>Save</span>
                         </button>
                       </div>
