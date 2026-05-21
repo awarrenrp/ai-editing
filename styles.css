@@ -986,6 +986,7 @@ button {
   transition:
     opacity var(--artifact-tray-motion-duration) var(--artifact-motion-ease),
     transform var(--artifact-tray-motion-duration) var(--artifact-motion-ease);
+  will-change: opacity, transform;
 }
 
 .artifact-takeover.is-open {
@@ -1925,7 +1926,7 @@ button {
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .chat-panel-nav__left,
@@ -1933,6 +1934,45 @@ button {
   display: flex;
   align-items: center;
   gap: 2px;
+}
+
+.chat-artifact-menu {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.chat-artifact-menu__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  width: 176px;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: 6px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14);
+}
+
+.chat-artifact-menu__item {
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  border-radius: var(--radius-md);
+  padding: 0 10px;
+  color: #000;
+  font-size: 13px;
+  font-weight: 535;
+  line-height: 18px;
+  text-align: left;
+}
+
+.chat-artifact-menu__item:hover {
+  background: var(--surface-low);
 }
 
 .chat-panel-title {
@@ -2011,6 +2051,7 @@ button {
   position: relative;
   width: 100%;
   max-width: 416px;
+  overflow: visible;
   padding: 0 34px 34px 0;
   color: #000;
   font-size: 14px;
@@ -2128,6 +2169,82 @@ button {
   color: var(--text);
 }
 
+.chat-output-action--save {
+  margin-left: auto;
+}
+
+.chat-output-action--save.is-saved {
+  color: var(--text-soft);
+}
+
+.artifact-more-menu {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.artifact-more-menu.is-open .artifact-more-menu__trigger {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.artifact-more-menu__trigger {
+  position: static;
+  flex: 0 0 auto;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.artifact-more-menu__trigger:hover,
+.artifact-more-menu.is-open .artifact-more-menu__trigger {
+  background: var(--surface-low);
+}
+
+.artifact-more-menu__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  display: flex;
+  width: 260px;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--outline-variant, rgba(0, 0, 0, 0.1));
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 8px 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
+}
+
+.artifact-more-menu__item {
+  display: grid;
+  min-height: 33px;
+  grid-template-columns: 18px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  color: #000;
+  font-size: 14px;
+  font-weight: 430;
+  line-height: 20px;
+  text-align: left;
+}
+
+.artifact-more-menu__item:hover {
+  background: var(--surface-low);
+}
+
+.artifact-more-menu__item .icon:last-child {
+  color: #2457ff;
+}
+
+.artifact-more-menu__separator {
+  height: 1px;
+  margin: 7px 0;
+  background: var(--outline-soft);
+}
+
 .chat-output.is-launching-view .report-preview,
 .chat-output.is-launching-edit .report-preview,
 .chat-output.is-launching-view .table-preview,
@@ -2145,7 +2262,7 @@ button {
   display: block;
   position: relative;
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--outline-soft);
   border-radius: 16px;
   background: var(--surface);
@@ -2197,6 +2314,7 @@ button {
 
 .report-preview__header {
   display: flex;
+  position: relative;
   height: 44px;
   align-items: center;
   justify-content: space-between;
@@ -2220,18 +2338,6 @@ button {
 .report-preview__chart {
   position: relative;
   padding: 28px 16px 18px 34px;
-}
-
-.report-preview__more {
-  position: static;
-  flex: 0 0 auto;
-  z-index: 3;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.report-preview__more:hover {
-  background: var(--surface-low);
 }
 
 .report-preview--compact .report-preview__chart {
@@ -2356,7 +2462,7 @@ button {
   position: relative;
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible;
   border-radius: var(--radius-lg);
   background: var(--surface);
   color: #000;
@@ -2407,6 +2513,15 @@ button {
 .table-preview__scroller {
   width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: inherit;
+}
+
+.table-preview__more {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 8;
 }
 
 .table-preview table {

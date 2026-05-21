@@ -9,6 +9,8 @@ const Icon = {
   bell: '<path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7"/><path d="M10 20a2 2 0 0 0 4 0"/>',
   check: '<path d="m5 12 4 4 10-10"/>',
   close: '<path d="M6 6 18 18M18 6 6 18"/>',
+  copy: '<rect x="8" y="8" width="11" height="11" rx="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V5a2 2 0 0 1 2-2h9a1 1 0 0 1 1 1v1"/>',
+  download: '<path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/>',
   expand: '<path d="M8 3H3v5M16 3h5v5M8 21H3v-5M21 16v5h-5"/><path d="M3 3l7 7M21 3l-7 7M3 21l7-7M21 21l-7-7"/>',
   more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
   org: '<path d="M12 4v5M6 20v-5h12v5M6 15V9h12v6"/><rect x="9" y="2" width="6" height="4"/><rect x="3" y="18" width="6" height="4"/><rect x="15" y="18" width="6" height="4"/>',
@@ -54,10 +56,6 @@ const ArtifactTrayAssets = {
   pin: "assets/artifact-pin.svg"
 };
 
-const PebbleIconAssets = {
-  document: "assets/pebble-document-button.png"
-};
-
 function svgIcon(name, size = 20) {
   return `<svg class="icon" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${Icon[name]}</svg>`;
 }
@@ -77,10 +75,6 @@ function escapeHtml(value) {
 
 function iconButton(name, label, className = "", attrs = "") {
   return `<button class="icon-button ${className}" type="button" aria-label="${label}" title="${label}" ${attrs}>${svgIcon(name)}</button>`;
-}
-
-function imageIconButton(source, label, className = "", attrs = "") {
-  return `<button class="icon-button ${className}" type="button" aria-label="${label}" title="${label}" ${attrs}><img class="pebble-icon-image" src="${source}" alt="" /></button>`;
 }
 
 function topNavAssetIcon(source, label, className = "") {
@@ -175,6 +169,33 @@ function ArtifactSettingsMenu() {
                   )
                   .join("")}
               </section>
+            </div>
+          `
+          : ""
+      }
+    </div>
+  `;
+}
+
+function ChatArtifactMenu() {
+  return `
+    <div class="chat-artifact-menu">
+      ${iconButton(
+        "more",
+        "Artifact actions",
+        `artifact-trigger chat-artifact-menu__trigger ${prototypeState.artifactMenuOpen ? "is-active" : ""}`,
+        `data-action="toggle-artifact-menu" aria-haspopup="true" aria-expanded="${prototypeState.artifactMenuOpen}"`
+      )}
+      ${
+        prototypeState.artifactMenuOpen
+          ? `
+            <div class="chat-artifact-menu__panel" role="menu" aria-label="Artifact actions">
+              <button class="chat-artifact-menu__item" type="button" data-action="see-artifacts" role="menuitem">
+                <span>See artifacts</span>
+              </button>
+              <button class="chat-artifact-menu__item" type="button" data-action="share-chat" role="menuitem">
+                <span>Share</span>
+              </button>
             </div>
           `
           : ""
@@ -375,6 +396,66 @@ function ArtifactPreview({ artifactId, variant = "compact", interactive = false 
   return ReportPreview({ artifactId, variant, interactive });
 }
 
+const artifactMoreActions = [
+  { id: "download", label: "Download", icon: "download", selected: true },
+  { id: "duplicate", label: "Duplicate", icon: "copy" },
+  { id: "edit", label: "Edit", icon: "edit" },
+  { type: "separator" },
+  { id: "pin", label: "Pin", icon: "star" },
+  { id: "viewSql", label: "View SQL", icon: "eye" }
+];
+
+function ArtifactMoreMenu({ artifactId } = {}) {
+  const isOpen = prototypeState.activeArtifactActionMenuId === artifactId;
+
+  return `
+    <div class="artifact-more-menu ${isOpen ? "is-open" : ""}" data-node-id="1732:29933">
+      <button
+        class="icon-button chat-output-more artifact-more-menu__trigger"
+        type="button"
+        aria-label="More actions"
+        title="More actions"
+        data-action="toggle-artifact-action-menu"
+        data-artifact-id="${artifactId}"
+        aria-haspopup="true"
+        aria-expanded="${isOpen}"
+      >
+        ${svgIcon("more", 18)}
+      </button>
+      ${
+        isOpen
+          ? `
+            <div class="artifact-more-menu__dropdown" role="menu" aria-label="Artifact actions">
+              ${artifactMoreActions
+                .map((action) => {
+                  if (action.type === "separator") {
+                    return '<div class="artifact-more-menu__separator" role="separator"></div>';
+                  }
+
+                  return `
+                    <button
+                      class="artifact-more-menu__item ${action.selected ? "is-selected" : ""}"
+                      type="button"
+                      data-action="artifact-menu-command"
+                      data-menu-command="${action.id}"
+                      data-artifact-id="${artifactId}"
+                      role="menuitem"
+                    >
+                      ${svgIcon(action.icon, 16)}
+                      <span>${action.label}</span>
+                      ${action.selected ? svgIcon("check", 16) : ""}
+                    </button>
+                  `;
+                })
+                .join("")}
+            </div>
+          `
+          : ""
+      }
+    </div>
+  `;
+}
+
 function ReportPreview({ artifactId, variant = "compact", interactive = false } = {}) {
   const artifact = getArtifactById(artifactId);
   const preview = artifact?.reportPreview;
@@ -389,11 +470,7 @@ function ReportPreview({ artifactId, variant = "compact", interactive = false } 
         <h3>${escapeHtml(preview.title)}</h3>
         ${
           interactive
-            ? `
-              <button class="icon-button chat-output-more report-preview__more" type="button" aria-label="More actions" title="More actions">
-                ${svgIcon("more", 18)}
-              </button>
-            `
+            ? ArtifactMoreMenu({ artifactId })
             : ""
         }
       </div>
@@ -448,6 +525,7 @@ function TablePreview({ artifactId, variant = "compact", interactive = false } =
 
   return `
     <div class="table-preview table-preview--${variant}" data-node-id="883:13314" ${actionAttrs}>
+      ${interactive ? `<div class="table-preview__more">${ArtifactMoreMenu({ artifactId })}</div>` : ""}
       <div class="table-preview__scroller">
         <table aria-label="${escapeHtml(table.title)}">
           <thead>
@@ -549,8 +627,11 @@ function ChatThread({ mode = "sidebar" } = {}) {
   return `
     <div class="chat-thread" role="log" aria-live="polite" aria-label="Chat messages">
       ${prototypeState.chatMessages
-        .map(
-          (message) => `
+        .map((message) => {
+          const canSaveWidget = isTableWidgetArtifact(message.artifactId);
+          const isSavedWidget = canSaveWidget && prototypeState.savedArtifactIds.includes(message.artifactId);
+
+          return `
             <article class="chat-message chat-message--${message.role}">
               <div class="${message.role === "assistant" ? `chat-output ${message.preview ? "chat-output--has-preview" : ""}` : "chat-bubble"}">
                 ${message.role === "assistant" ? ChatOutputSummary(message) : `<p>${escapeHtml(message.body)}</p>`}
@@ -570,14 +651,30 @@ function ChatThread({ mode = "sidebar" } = {}) {
                             <span>Edit</span>
                           </button>
                         </div>
+                        ${
+                          canSaveWidget
+                            ? `
+                              <button
+                                class="chat-output-action chat-output-action--save ${isSavedWidget ? "is-saved" : ""}"
+                                type="button"
+                                data-action="save-chat-output"
+                                data-artifact-id="${message.artifactId}"
+                                aria-label="${isSavedWidget ? `Saved ${escapeHtml(getArtifactById(message.artifactId).label)}` : `Save ${escapeHtml(getArtifactById(message.artifactId).label)}`}"
+                                ${isSavedWidget ? 'aria-pressed="true"' : ""}
+                              >
+                                <span>${isSavedWidget ? "Saved" : "Save"}</span>
+                              </button>
+                            `
+                            : ""
+                        }
                       </div>
                     `
                     : ""
                 }
               </div>
             </article>
-          `
-        )
+          `;
+        })
         .join("")}
     </div>
   `;
@@ -1117,6 +1214,19 @@ function getArtifactById(artifactId) {
   return artifactItems.find((item) => item.id === artifactId);
 }
 
+function isTableWidgetArtifact(artifactId) {
+  return Boolean(getArtifactById(artifactId)?.tablePreview);
+}
+
+function isAutoSavedArtifact(artifactId) {
+  const artifact = getArtifactById(artifactId);
+  return Boolean(artifact && !artifact.tablePreview);
+}
+
+function getAutoSavedArtifactIds(artifactIds) {
+  return getValidArtifactIds(artifactIds).filter(isAutoSavedArtifact);
+}
+
 function getCurrentArtifactItems() {
   return prototypeState.savedArtifactIds.map(getArtifactById).filter(Boolean);
 }
@@ -1369,7 +1479,6 @@ function ChatPanel({ mode = "sidebar" } = {}) {
   const canShowArtifactTray = !(prototypeState.activeArtifactId && prototypeState.artifactMode !== "onTop");
   const useTakeoverTray = !isFull && prototypeState.sideTrayMode === "takeover";
   const artifactTrayClass = prototypeState.artifactTrayOpen ? "is-open" : "is-hidden";
-  const artifactTrayLabel = prototypeState.artifactTrayOpen ? "Hide artifacts" : "Show artifacts";
   const nodeId = isFull ? "298:43955" : "298:43951";
   const artifactClass = isFull && prototypeState.activeArtifactId ? ` ai-panel--artifact-${prototypeState.artifactMode}` : "";
   const chatTitle = conversationData[prototypeState.activeConversationId]?.title || "{{Chat title}}";
@@ -1393,18 +1502,9 @@ function ChatPanel({ mode = "sidebar" } = {}) {
             <h1 class="chat-panel-title">${escapeHtml(chatTitle)}</h1>
           </div>
           <div class="chat-panel-nav__actions">
-            ${
-              canShowArtifactTray
-                ? imageIconButton(
-                    PebbleIconAssets.document,
-                    artifactTrayLabel,
-                    `artifact-trigger ${prototypeState.artifactTrayOpen ? "is-active" : ""}`,
-                    `data-action="toggle-artifact-tray" aria-pressed="${prototypeState.artifactTrayOpen}"`
-                  )
-                : ""
-            }
+            ${canShowArtifactTray ? ChatArtifactMenu() : ""}
             ${iconButton("commentPlus", "New chat", "", 'data-action="new-chat"')}
-            ${isFull ? iconButton("more", "More") : iconButton("expand", "Expand", "", 'data-action="expand-chat"')}
+            ${isFull ? "" : iconButton("expand", "Expand", "", 'data-action="expand-chat"')}
             ${iconButton("close", isFull ? "Collapse chat" : "Close", "", isFull ? 'data-action="collapse-chat"' : "")}
           </div>
         </div>
@@ -1477,7 +1577,9 @@ const prototypeState = {
   artifactSurfaceMode: "view",
   artifactReturnMode: null,
   artifactTrayOpen: false,
-  sideTrayMode: "tray",
+  artifactMenuOpen: false,
+  activeArtifactActionMenuId: null,
+  sideTrayMode: "takeover",
   settingsMenuOpen: false,
   chatHistoryOpen: false,
   composerDraft: "",
@@ -1578,6 +1680,8 @@ function openArtifact(artifactId) {
   prototypeState.artifactSurfaceMode = "view";
   prototypeState.artifactReturnMode = originMode;
   prototypeState.artifactTrayOpen = false;
+  prototypeState.artifactMenuOpen = false;
+  prototypeState.activeArtifactActionMenuId = null;
 
   if (prototypeState.artifactMode !== "onTop" && prototypeState.chatMode !== "fullscreen") {
     transitionChatMode("fullscreen");
@@ -1645,6 +1749,22 @@ function addArtifactsToTray(artifactIds) {
   prototypeState.savedArtifactIds = nextArtifactIds;
 }
 
+function saveTableWidgetToTray(artifactId) {
+  if (!isTableWidgetArtifact(artifactId)) return;
+
+  addArtifactsToTray([artifactId]);
+  revealArtifactTray();
+}
+
+function revealArtifactTray() {
+  prototypeState.artifactTrayOpen = false;
+  prototypeState.artifactMenuOpen = false;
+  prototypeState.activeArtifactActionMenuId = null;
+  prototypeState.chatHistoryOpen = false;
+  renderAppLayout();
+  window.requestAnimationFrame(() => setArtifactTrayOpen(true));
+}
+
 function loadConversation(conversationId) {
   const conversation = conversationData[conversationId];
 
@@ -1659,8 +1779,10 @@ function loadConversation(conversationId) {
   prototypeState.activeArtifactId = null;
   prototypeState.artifactSurfaceMode = "view";
   prototypeState.artifactReturnMode = null;
-  prototypeState.savedArtifactIds = getValidArtifactIds(conversation.artifactIds || conversation.messages.map((message) => message.artifactId).filter(Boolean));
+  prototypeState.savedArtifactIds = getAutoSavedArtifactIds(conversation.artifactIds || conversation.messages.map((message) => message.artifactId).filter(Boolean));
   prototypeState.artifactTrayOpen = prototypeState.savedArtifactIds.length > 0;
+  prototypeState.artifactMenuOpen = false;
+  prototypeState.activeArtifactActionMenuId = null;
   prototypeState.chatHistoryOpen = false;
   prototypeState.workbenchArtifactId = null;
 
@@ -1684,8 +1806,10 @@ function sendChatMessage(text, preferredArtifactId = null) {
   prototypeState.activeArtifactId = null;
   prototypeState.artifactSurfaceMode = "view";
   prototypeState.artifactReturnMode = null;
-  addArtifactsToTray(artifact ? [artifact.id] : []);
-  prototypeState.artifactTrayOpen = prototypeState.savedArtifactIds.length > 0;
+  addArtifactsToTray(artifact && isAutoSavedArtifact(artifact.id) ? [artifact.id] : []);
+  prototypeState.artifactTrayOpen = false;
+  prototypeState.artifactMenuOpen = false;
+  prototypeState.activeArtifactActionMenuId = null;
 
   renderAppLayout();
 }
@@ -1725,6 +1849,7 @@ function runChatOutputAction(source, action) {
   const artifactId = source?.dataset?.artifactId;
   if (!getArtifactById(artifactId)) return;
 
+  prototypeState.activeArtifactActionMenuId = null;
   const output = source.closest?.(".chat-output");
   const launchClass = `is-launching-${action}`;
   output?.classList.add(launchClass);
@@ -1795,6 +1920,43 @@ function bindLayoutInteractions() {
     });
   });
 
+  document.querySelectorAll('[data-action="save-chat-output"]').forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      saveTableWidgetToTray(button.dataset.artifactId);
+    });
+  });
+
+  document.querySelectorAll('[data-action="toggle-artifact-action-menu"]').forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const artifactId = button.dataset.artifactId;
+      prototypeState.artifactMenuOpen = false;
+      prototypeState.activeArtifactActionMenuId = prototypeState.activeArtifactActionMenuId === artifactId ? null : artifactId;
+      renderAppLayout();
+    });
+
+    button.addEventListener("keydown", (event) => {
+      event.stopPropagation();
+    });
+  });
+
+  document.querySelectorAll('[data-action="artifact-menu-command"]').forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const command = button.dataset.menuCommand;
+
+      if (command === "edit") {
+        prototypeState.activeArtifactActionMenuId = null;
+        runChatOutputAction(button, "edit");
+        return;
+      }
+
+      prototypeState.activeArtifactActionMenuId = null;
+      renderAppLayout();
+    });
+  });
+
   document.querySelectorAll(".chat-output-more").forEach((button) => {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -1842,8 +2004,30 @@ function bindLayoutInteractions() {
       prototypeState.artifactReturnMode = null;
       prototypeState.savedArtifactIds = [];
       prototypeState.artifactTrayOpen = false;
+      prototypeState.artifactMenuOpen = false;
+      prototypeState.activeArtifactActionMenuId = null;
       prototypeState.chatHistoryOpen = false;
       prototypeState.workbenchArtifactId = null;
+      renderAppLayout();
+    });
+  });
+
+  document.querySelectorAll('[data-action="toggle-artifact-menu"]').forEach((button) => {
+    button.addEventListener("click", () => {
+      prototypeState.artifactMenuOpen = !prototypeState.artifactMenuOpen;
+      renderAppLayout();
+    });
+  });
+
+  document.querySelectorAll('[data-action="see-artifacts"]').forEach((button) => {
+    button.addEventListener("click", () => {
+      revealArtifactTray();
+    });
+  });
+
+  document.querySelectorAll('[data-action="share-chat"]').forEach((button) => {
+    button.addEventListener("click", () => {
+      prototypeState.artifactMenuOpen = false;
       renderAppLayout();
     });
   });
@@ -1920,10 +2104,12 @@ function bindInteractions() {
 
 function setArtifactTrayOpen(isOpen) {
   prototypeState.artifactTrayOpen = isOpen;
+  prototypeState.artifactMenuOpen = false;
+  prototypeState.activeArtifactActionMenuId = null;
 
   const dock = document.querySelector(".artifact-dock");
   const takeover = document.querySelector(".artifact-takeover");
-  const trigger = document.querySelector('[data-action="toggle-artifact-tray"]');
+  const trigger = document.querySelector('[data-action="toggle-artifact-menu"]');
   const peekZone = document.querySelector('[data-action="peek-artifact-tray"]');
 
   dock?.classList.toggle("is-open", isOpen);
@@ -1931,14 +2117,14 @@ function setArtifactTrayOpen(isOpen) {
   takeover?.classList.toggle("is-open", isOpen);
   takeover?.classList.toggle("is-hidden", !isOpen);
   trigger?.classList.toggle("is-active", isOpen);
-  trigger?.setAttribute("aria-pressed", `${isOpen}`);
-  trigger?.setAttribute("aria-label", isOpen ? "Hide artifacts" : "Show artifacts");
-  trigger?.setAttribute("title", isOpen ? "Hide artifacts" : "Show artifacts");
+  trigger?.setAttribute("aria-expanded", "false");
   peekZone?.classList.toggle("is-visible", !isOpen);
 }
 
 function setChatHistoryOpen(isOpen) {
   prototypeState.chatHistoryOpen = isOpen;
+  prototypeState.artifactMenuOpen = false;
+  prototypeState.activeArtifactActionMenuId = null;
 
   const overlay = document.querySelector(".chat-history-overlay");
   const trigger = document.querySelector('[data-action="toggle-chat-history"]');
