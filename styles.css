@@ -2567,10 +2567,6 @@ button {
   align-items: flex-start;
 }
 
-.prompt-list--followup {
-  padding: 0 4px;
-}
-
 .prompt-chip {
   display: inline-flex;
   align-items: center;

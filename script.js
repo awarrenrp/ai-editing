@@ -581,9 +581,6 @@ function ChatThread({ mode = "sidebar" } = {}) {
         )
         .join("")}
     </div>
-    <div class="prompt-list prompt-list--${mode} prompt-list--followup" aria-label="Suggested prompts">
-      ${promptItems.map(PromptChip).join("")}
-    </div>
   `;
 }
 
