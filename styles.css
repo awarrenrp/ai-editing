@@ -2128,10 +2128,6 @@ button {
   color: var(--text);
 }
 
-.chat-output-action--save {
-  margin-left: auto;
-}
-
 .chat-output.is-launching-view .report-preview,
 .chat-output.is-launching-edit .report-preview,
 .chat-output.is-launching-view .table-preview,

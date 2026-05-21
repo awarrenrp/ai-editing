@@ -570,9 +570,6 @@ function ChatThread({ mode = "sidebar" } = {}) {
                             <span>Edit</span>
                           </button>
                         </div>
-                        <button class="chat-output-action chat-output-action--save" type="button" data-action="save-chat-output" data-artifact-id="${message.artifactId}">
-                          <span>Save</span>
-                        </button>
                       </div>
                     `
                     : ""
@@ -1283,9 +1280,6 @@ function ArtifactReader() {
               <button class="artifact-reader__action" type="button" data-action="edit-artifact-modal" data-artifact-id="${artifact.id}">
                 Edit
               </button>
-              <button class="artifact-reader__action" type="button" data-action="save-artifact-modal" data-artifact-id="${artifact.id}">
-                Save
-              </button>
             </div>
           `
           : ""
@@ -1598,28 +1592,6 @@ function openArtifact(artifactId) {
   renderAppLayout();
 }
 
-function saveArtifactToTray(artifactId, { closeActiveArtifact = false } = {}) {
-  if (!getArtifactById(artifactId)) return;
-
-  if (!prototypeState.savedArtifactIds.includes(artifactId)) {
-    prototypeState.savedArtifactIds = [...prototypeState.savedArtifactIds, artifactId];
-  }
-
-  if (closeActiveArtifact) {
-    prototypeState.activeArtifactId = null;
-    prototypeState.artifactSurfaceMode = "view";
-    prototypeState.artifactReturnMode = null;
-  }
-
-  prototypeState.artifactTrayOpen = false;
-  prototypeState.chatHistoryOpen = false;
-  renderAppLayout();
-
-  window.requestAnimationFrame(() => {
-    setArtifactTrayOpen(true);
-  });
-}
-
 function resolveArtifactFromText(text) {
   const normalized = text.toLowerCase();
   const exactPrompt = promptItems.find((prompt) => prompt.label.toLowerCase() === normalized);
@@ -1657,6 +1629,22 @@ function buildAssistantMessage(artifactId) {
   };
 }
 
+function getValidArtifactIds(artifactIds) {
+  return [...new Set(artifactIds.filter((artifactId) => getArtifactById(artifactId)))];
+}
+
+function addArtifactsToTray(artifactIds) {
+  const nextArtifactIds = [...prototypeState.savedArtifactIds];
+
+  getValidArtifactIds(artifactIds).forEach((artifactId) => {
+    if (!nextArtifactIds.includes(artifactId)) {
+      nextArtifactIds.push(artifactId);
+    }
+  });
+
+  prototypeState.savedArtifactIds = nextArtifactIds;
+}
+
 function loadConversation(conversationId) {
   const conversation = conversationData[conversationId];
 
@@ -1671,8 +1659,8 @@ function loadConversation(conversationId) {
   prototypeState.activeArtifactId = null;
   prototypeState.artifactSurfaceMode = "view";
   prototypeState.artifactReturnMode = null;
-  prototypeState.savedArtifactIds = [];
-  prototypeState.artifactTrayOpen = false;
+  prototypeState.savedArtifactIds = getValidArtifactIds(conversation.artifactIds || conversation.messages.map((message) => message.artifactId).filter(Boolean));
+  prototypeState.artifactTrayOpen = prototypeState.savedArtifactIds.length > 0;
   prototypeState.chatHistoryOpen = false;
   prototypeState.workbenchArtifactId = null;
 
@@ -1684,6 +1672,7 @@ function sendChatMessage(text, preferredArtifactId = null) {
   if (!body) return;
 
   const artifactId = preferredArtifactId || resolveArtifactFromText(body);
+  const artifact = getArtifactById(artifactId);
   prototypeState.chatMessages = [
     ...prototypeState.chatMessages,
     { role: "user", body },
@@ -1695,7 +1684,8 @@ function sendChatMessage(text, preferredArtifactId = null) {
   prototypeState.activeArtifactId = null;
   prototypeState.artifactSurfaceMode = "view";
   prototypeState.artifactReturnMode = null;
-  prototypeState.artifactTrayOpen = false;
+  addArtifactsToTray(artifact ? [artifact.id] : []);
+  prototypeState.artifactTrayOpen = prototypeState.savedArtifactIds.length > 0;
 
   renderAppLayout();
 }
@@ -1802,13 +1792,6 @@ function bindLayoutInteractions() {
   document.querySelectorAll('[data-action="edit-chat-output"]').forEach((button) => {
     button.addEventListener("click", () => {
       runChatOutputAction(button, "edit");
-    });
-  });
-
-  document.querySelectorAll('[data-action="save-chat-output"]').forEach((button) => {
-    button.addEventListener("click", (event) => {
-      event.stopPropagation();
-      saveArtifactToTray(button.dataset.artifactId);
     });
   });
 
@@ -1928,11 +1911,6 @@ function bindArtifactSurfaceActions(root = document) {
     });
   });
 
-  root.querySelectorAll('[data-action="save-artifact-modal"]').forEach((button) => {
-    button.addEventListener("click", () => {
-      saveArtifactToTray(button.dataset.artifactId, { closeActiveArtifact: true });
-    });
-  });
 }
 
 function bindInteractions() {
