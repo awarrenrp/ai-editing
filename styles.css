@@ -2084,8 +2084,8 @@ button {
 }
 
 .chat-output-action:hover {
-  background: var(--berry-soft);
-  color: var(--berry);
+  background: var(--surface-low);
+  color: var(--text);
 }
 
 .chat-output-action--publish {
