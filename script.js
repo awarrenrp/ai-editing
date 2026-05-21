@@ -806,16 +806,21 @@ const artifactItems = [
       { value: "36d", label: "average time to fill" },
       { value: "6", label: "departments represented" }
     ],
-    reportPreview: {
+    tablePreview: {
       title: "Positions filled by quarter",
-      yLabel: "Filled positions",
-      xLabel: "2026",
-      ticks: [8, 6, 4, 2, 0],
-      bars: [
-        { label: "Q1", value: 3 },
-        { label: "Q2", value: 5 },
-        { label: "Q3", value: 6 },
-        { label: "Q4", value: 3 }
+      compactRows: 4,
+      columns: [
+        { key: "quarter", label: "Quarter", width: "104px" },
+        { key: "filled", label: "Filled", type: "link", width: "96px" },
+        { key: "share", label: "Share", width: "88px", compact: false },
+        { key: "topDepartment", label: "Top department", width: "164px" },
+        { key: "status", label: "Status", type: "status", width: "120px", compact: false }
+      ],
+      rows: [
+        { quarter: "Q1", filled: "3 roles", share: "18%", topDepartment: "Administration", status: { label: "Complete", tone: "success" } },
+        { quarter: "Q2", filled: "5 roles", share: "29%", topDepartment: "Clinical", status: { label: "Complete", tone: "success" } },
+        { quarter: "Q3", filled: "6 roles", share: "35%", topDepartment: "Administration", status: { label: "Complete", tone: "success" } },
+        { quarter: "Q4", filled: "3 roles", share: "18%", topDepartment: "Clinical", status: { label: "Complete", tone: "success" } }
       ]
     },
     sections: [
@@ -845,18 +850,23 @@ const artifactItems = [
       { value: "31d", label: "median time to fill" },
       { value: "+16d", label: "fabrication vs company avg" }
     ],
-    reportPreview: {
+    tablePreview: {
       title: "Average days to fill by department",
-      yLabel: "Days",
-      xLabel: "Department",
-      ticks: [60, 48, 36, 24, 12, 0],
-      bars: [
-        { label: "Admin", value: 29 },
-        { label: "Clinical", value: 44 },
-        { label: "Acct", value: 33 },
-        { label: "Billing", value: 28 },
-        { label: "Mktg", value: 36 },
-        { label: "Fab", value: 52 }
+      compactRows: 4,
+      columns: [
+        { key: "department", label: "Department", width: "180px" },
+        { key: "avgFill", label: "Avg fill", type: "link", width: "96px" },
+        { key: "variance", label: "Variance", width: "96px", compact: false },
+        { key: "filled", label: "Filled", width: "88px", compact: false },
+        { key: "status", label: "Status", type: "status", width: "120px" }
+      ],
+      rows: [
+        { department: "Administration", avgFill: "29d", variance: "-7d", filled: "8 roles", status: { label: "Fastest", tone: "success" } },
+        { department: "Clinical", avgFill: "44d", variance: "+8d", filled: "5 roles", status: { label: "Watch", tone: "warning" } },
+        { department: "Accounting", avgFill: "33d", variance: "-3d", filled: "1 role", status: { label: "Complete", tone: "success" } },
+        { department: "Billing", avgFill: "28d", variance: "-8d", filled: "1 role", status: { label: "Complete", tone: "success" } },
+        { department: "Marketing and Sales", avgFill: "36d", variance: "0d", filled: "1 role", status: { label: "Complete", tone: "success" } },
+        { department: "Brookfield Fabrication", avgFill: "52d", variance: "+16d", filled: "1 role", status: { label: "Watch", tone: "warning" } }
       ]
     },
     sections: [
@@ -933,16 +943,21 @@ const artifactItems = [
       { value: "68d", label: "Fabrication Specialist" },
       { value: "52d", label: "next longest role" }
     ],
-    reportPreview: {
+    tablePreview: {
       title: "Longest time to fill",
-      yLabel: "Days",
-      xLabel: "Position",
-      ticks: [80, 64, 48, 32, 16, 0],
-      bars: [
-        { label: "Clin Mgr", value: 74 },
-        { label: "Fab Spec", value: 68 },
-        { label: "RN", value: 52 },
-        { label: "Admin", value: 45 }
+      compactRows: 4,
+      columns: [
+        { key: "position", label: "Position", width: "196px" },
+        { key: "days", label: "Days", type: "link", width: "80px" },
+        { key: "department", label: "Department", width: "156px" },
+        { key: "driver", label: "Driver", width: "188px", compact: false },
+        { key: "status", label: "Status", type: "status", width: "120px", compact: false }
+      ],
+      rows: [
+        { position: "Clinical Manager", days: "74d", department: "Clinical", driver: "Scheduling and comp review", status: { label: "Watch", tone: "warning" } },
+        { position: "Fabrication Specialist", days: "68d", department: "Brookfield Fabrication", driver: "Small candidate pool", status: { label: "Watch", tone: "warning" } },
+        { position: "Registered Nurse", days: "52d", department: "Clinical", driver: "Final interview timing", status: { label: "Complete", tone: "success" } },
+        { position: "Admin Coordinator", days: "45d", department: "Administration", driver: "Offer timing", status: { label: "Complete", tone: "success" } }
       ]
     },
     sections: [
