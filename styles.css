@@ -2334,8 +2334,7 @@ button {
   width: 100%;
   max-width: 100%;
   overflow: hidden;
-  border: 1px solid var(--outline-soft);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
   color: #000;
   text-align: left;
@@ -2351,12 +2350,12 @@ button {
 }
 
 .table-preview[role="button"]:hover {
-  border-color: rgba(122, 0, 93, 0.24);
   background: #fafafa;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transform: none;
 }
 
+.table-preview[role="button"]:hover th,
 .table-preview[role="button"]:hover td {
   background: #fafafa;
 }
@@ -2382,22 +2381,6 @@ button {
   max-width: 960px;
 }
 
-.table-preview__header {
-  display: flex;
-  min-height: 56px;
-  align-items: center;
-  border-bottom: 1px solid var(--outline-soft);
-  padding: 0 16px;
-}
-
-.table-preview__header h3 {
-  margin: 0;
-  color: #000;
-  font-size: 16px;
-  font-weight: 535;
-  line-height: 24px;
-}
-
 .table-preview__scroller {
   width: 100%;
   overflow-x: auto;
@@ -2415,19 +2398,15 @@ button {
 }
 
 .table-preview th {
-  height: 40px;
-  border-right: 1px solid var(--outline-soft);
-  border-bottom: 1px solid var(--outline-soft);
-  background: var(--surface-low);
-  color: var(--text-muted);
+  height: 44px;
+  border-top: 1px solid var(--outline);
+  border-bottom: 1px solid var(--outline);
+  background: var(--surface-panel);
+  color: #000;
   font-size: 14px;
   font-weight: 535;
   line-height: 20px;
-  padding: 4px 8px 4px 12px;
-}
-
-.table-preview th:last-child {
-  border-right: 0;
+  padding: 0 12px;
 }
 
 .table-preview th span {
@@ -2435,11 +2414,7 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.table-preview th .icon {
-  color: var(--text-muted);
-  flex: 0 0 auto;
+  display: block;
 }
 
 .table-preview th,
@@ -2448,27 +2423,13 @@ button {
   vertical-align: middle;
 }
 
-.table-preview th {
-  gap: 4px;
-}
-
 .table-preview th,
 .table-preview td {
   overflow: hidden;
 }
 
-.table-preview th {
-  align-items: center;
-}
-
-.table-preview th > span,
-.table-preview th > svg {
-  display: inline-block;
-  vertical-align: middle;
-}
-
 .table-preview td {
-  height: 48px;
+  height: 44px;
   border-bottom: 1px solid var(--outline-soft);
   background: var(--surface);
   color: #000;
@@ -2489,17 +2450,20 @@ button {
   text-align: left;
 }
 
+.table-preview th:last-child,
+.table-preview td:last-child {
+  text-align: right;
+}
+
 .table-link {
-  color: #1e4aa9;
-  text-decoration: underline;
-  text-underline-position: from-font;
+  color: #000;
+  text-decoration: none;
 }
 
 .table-status {
   display: inline-flex;
   max-width: 100%;
   align-items: center;
-  gap: 5px;
   color: #000;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2507,38 +2471,7 @@ button {
 }
 
 .table-status i {
-  display: block;
-  width: 8px;
-  height: 8px;
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: #a5a5a8;
-}
-
-.table-status--success i {
-  background: #24856f;
-}
-
-.table-status--warning i {
-  background: #e29300;
-}
-
-.table-status--neutral i {
-  background: #a5a5a8;
-}
-
-.table-preview--compact .table-preview__header {
-  min-height: 44px;
-}
-
-.table-preview--compact th {
-  height: 36px;
-  padding: 4px 8px;
-}
-
-.table-preview--compact td {
-  height: 42px;
-  padding: 0 8px;
+  display: none;
 }
 
 .greeting {

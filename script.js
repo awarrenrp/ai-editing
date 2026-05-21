@@ -447,12 +447,9 @@ function TablePreview({ artifactId, variant = "compact", interactive = false } =
   const actionAttrs = interactive ? `role="button" tabindex="0" data-action="view-chat-output" data-artifact-id="${artifactId}" aria-label="View ${escapeHtml(artifact.label)}"` : "";
 
   return `
-    <div class="table-preview table-preview--${variant}" ${actionAttrs}>
-      <div class="table-preview__header">
-        <h3>${escapeHtml(table.title)}</h3>
-      </div>
+    <div class="table-preview table-preview--${variant}" data-node-id="883:13314" ${actionAttrs}>
       <div class="table-preview__scroller">
-        <table>
+        <table aria-label="${escapeHtml(table.title)}">
           <thead>
             <tr>
               ${columns
@@ -460,7 +457,6 @@ function TablePreview({ artifactId, variant = "compact", interactive = false } =
                   (column) => `
                     <th class="table-preview__cell--${column.type || "text"}" style="width: ${column.width || "auto"}">
                       <span>${escapeHtml(column.label)}</span>
-                      ${svgIcon("chevronDown", 12)}
                     </th>
                   `
                 )
