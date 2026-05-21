@@ -25,6 +25,7 @@ const Icon = {
   pin: '<path d="m15 4 5 5-4 1-4 7-3-3 7-4-1-6ZM9 14l-5 5"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   send: '<path d="M12 19V5M5 12l7-7 7 7"/>',
+  publish: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/>',
   arrowDownRight: '<path d="M7 7h10v10M7 17 17 7"/>',
   eye: '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/>',
   edit: '<path d="m14.5 4.5 5 5L8 21l-5 1 1-5L15.5 5.5Z"/><path d="m13 7 4 4"/>',
@@ -562,14 +563,20 @@ function ChatThread({ mode = "sidebar" } = {}) {
                   message.artifactId
                     ? `
                       ${message.preview === "report" ? "" : `<button class="icon-button chat-output-more" type="button" aria-label="More actions" title="More actions">${svgIcon("more", 18)}</button>`}
-                      <div class="chat-output-actions" aria-label="Output actions">
-                        <button class="chat-output-action" type="button" data-action="view-chat-output" data-artifact-id="${message.artifactId}">
-                          ${svgIcon("eye", 14)}
-                          <span>View</span>
-                        </button>
-                        <button class="chat-output-action" type="button" data-action="edit-chat-output" data-artifact-id="${message.artifactId}">
-                          ${svgIcon("edit", 14)}
-                          <span>Edit</span>
+                      <div class="chat-output-action-row" aria-label="Output actions">
+                        <div class="chat-output-actions">
+                          <button class="chat-output-action" type="button" data-action="view-chat-output" data-artifact-id="${message.artifactId}">
+                            ${svgIcon("eye", 14)}
+                            <span>View</span>
+                          </button>
+                          <button class="chat-output-action" type="button" data-action="edit-chat-output" data-artifact-id="${message.artifactId}">
+                            ${svgIcon("edit", 14)}
+                            <span>Edit</span>
+                          </button>
+                        </div>
+                        <button class="chat-output-action chat-output-action--publish" type="button" data-action="publish-chat-output" data-artifact-id="${message.artifactId}">
+                          ${svgIcon("publish", 14)}
+                          <span>Publish</span>
                         </button>
                       </div>
                     `
@@ -1739,6 +1746,12 @@ function bindLayoutInteractions() {
   document.querySelectorAll('[data-action="edit-chat-output"]').forEach((button) => {
     button.addEventListener("click", () => {
       runChatOutputAction(button, "edit");
+    });
+  });
+
+  document.querySelectorAll('[data-action="publish-chat-output"]').forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
     });
   });
 

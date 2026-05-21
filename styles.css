@@ -2043,21 +2043,29 @@ button {
   transition: opacity 120ms ease;
 }
 
-.chat-output-actions {
+.chat-output-action-row {
   position: absolute;
   left: 0;
+  right: 0;
   bottom: 0;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 6px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 120ms ease;
 }
 
+.chat-output-actions {
+  display: flex;
+  gap: 6px;
+}
+
 .chat-output:hover .chat-output-more,
 .chat-output:focus-within .chat-output-more,
-.chat-output:hover .chat-output-actions,
-.chat-output:focus-within .chat-output-actions {
+.chat-output:hover .chat-output-action-row,
+.chat-output:focus-within .chat-output-action-row {
   opacity: 1;
   pointer-events: auto;
 }
@@ -2078,6 +2086,10 @@ button {
 .chat-output-action:hover {
   background: var(--berry-soft);
   color: var(--berry);
+}
+
+.chat-output-action--publish {
+  margin-left: auto;
 }
 
 .chat-output.is-launching-view .report-preview,
