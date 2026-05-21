@@ -1109,34 +1109,34 @@ function getArtifactById(artifactId) {
   return artifactItems.find((item) => item.id === artifactId);
 }
 
-const defaultArtifactIds = ["hours-policy", "time-attendance-report", "promotion-review"];
-
 function getCurrentArtifactItems() {
-  const conversation = conversationData[prototypeState.activeConversationId];
-  const artifactIds = conversation?.artifactIds || defaultArtifactIds;
-  return artifactIds.map(getArtifactById).filter(Boolean);
+  return prototypeState.savedArtifactIds.map(getArtifactById).filter(Boolean);
 }
 
 function ArtifactTray({ mode = "component" } = {}) {
   const items = getCurrentArtifactItems();
-  const trayHeight = Math.min(68 + items.length * 30, 360);
+  const trayHeight = Math.min(88 + Math.max(items.length, 1) * 30, 360);
   return `
     <aside class="artifact-tray artifact-tray--${mode} ${items.length > 3 ? "artifact-tray--has-many" : ""}" style="--artifact-tray-height: ${trayHeight}px" data-node-id="1682:16369" aria-label="Artifacts">
       <div class="artifact-tray__content">
         <h2>Artifacts</h2>
         <div class="artifact-tray__list">
-          ${items
-            .map(
-              (item) => `
-                <button class="artifact-item" type="button" data-artifact-id="${item.id}">
-                  <span class="artifact-item__icon artifact-item__icon--${item.tone}">
-                    <img src="${item.icon}" alt="" />
-                  </span>
-                  <span class="artifact-item__label">${escapeHtml(item.label)}</span>
-                </button>
-              `
-            )
-            .join("")}
+          ${
+            items.length
+              ? items
+                  .map(
+                    (item) => `
+                      <button class="artifact-item" type="button" data-artifact-id="${item.id}">
+                        <span class="artifact-item__icon artifact-item__icon--${item.tone}">
+                          <img src="${item.icon}" alt="" />
+                        </span>
+                        <span class="artifact-item__label">${escapeHtml(item.label)}</span>
+                      </button>
+                    `
+                  )
+                  .join("")
+              : '<p class="artifact-empty">Saved artifacts will appear here.</p>'
+          }
         </div>
       </div>
       <button class="artifact-tray__pin" type="button" aria-label="Hide artifacts tray" title="Hide artifacts tray" data-action="hide-artifact-tray">
@@ -1158,21 +1158,25 @@ function ArtifactTakeoverPanel({ mode = "sidebar" } = {}) {
         ${iconButton("close", "Close artifacts", "artifact-takeover__close", 'data-action="hide-artifact-tray"')}
       </div>
       <div class="artifact-takeover__list">
-        ${items
-          .map(
-            (item) => `
-              <button class="artifact-takeover-item" type="button" data-artifact-id="${item.id}">
-                <span class="artifact-item__icon artifact-item__icon--${item.tone}">
-                  <img src="${item.icon}" alt="" />
-                </span>
-                <span>
-                  <strong>${escapeHtml(item.label)}</strong>
-                  <small>${escapeHtml(item.eyebrow)}</small>
-                </span>
-              </button>
-            `
-          )
-          .join("")}
+        ${
+          items.length
+            ? items
+                .map(
+                  (item) => `
+                    <button class="artifact-takeover-item" type="button" data-artifact-id="${item.id}">
+                      <span class="artifact-item__icon artifact-item__icon--${item.tone}">
+                        <img src="${item.icon}" alt="" />
+                      </span>
+                      <span>
+                        <strong>${escapeHtml(item.label)}</strong>
+                        <small>${escapeHtml(item.eyebrow)}</small>
+                      </span>
+                    </button>
+                  `
+                )
+                .join("")
+            : '<p class="artifact-takeover__empty">Saved artifacts will appear here.</p>'
+        }
       </div>
     </aside>
   `;
@@ -1458,6 +1462,7 @@ const prototypeState = {
   chatHistoryOpen: false,
   composerDraft: "",
   chatMessages: [],
+  savedArtifactIds: [],
   activeConversationId: null,
   workbenchArtifactId: null,
   navExpanded: false,
@@ -1567,6 +1572,22 @@ function openArtifact(artifactId) {
   renderAppLayout();
 }
 
+function saveArtifactToTray(artifactId) {
+  if (!getArtifactById(artifactId)) return;
+
+  if (!prototypeState.savedArtifactIds.includes(artifactId)) {
+    prototypeState.savedArtifactIds = [...prototypeState.savedArtifactIds, artifactId];
+  }
+
+  prototypeState.artifactTrayOpen = false;
+  prototypeState.chatHistoryOpen = false;
+  renderAppLayout();
+
+  window.requestAnimationFrame(() => {
+    setArtifactTrayOpen(true);
+  });
+}
+
 function resolveArtifactFromText(text) {
   const normalized = text.toLowerCase();
   const exactPrompt = promptItems.find((prompt) => prompt.label.toLowerCase() === normalized);
@@ -1618,7 +1639,8 @@ function loadConversation(conversationId) {
   prototypeState.activeArtifactId = null;
   prototypeState.artifactSurfaceMode = "view";
   prototypeState.artifactReturnMode = null;
-  prototypeState.artifactTrayOpen = true;
+  prototypeState.savedArtifactIds = [];
+  prototypeState.artifactTrayOpen = false;
   prototypeState.chatHistoryOpen = false;
   prototypeState.workbenchArtifactId = null;
 
@@ -1751,6 +1773,7 @@ function bindLayoutInteractions() {
   document.querySelectorAll('[data-action="save-chat-output"]').forEach((button) => {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
+      saveArtifactToTray(button.dataset.artifactId);
     });
   });
 
@@ -1799,6 +1822,7 @@ function bindLayoutInteractions() {
       prototypeState.activeArtifactId = null;
       prototypeState.artifactSurfaceMode = "view";
       prototypeState.artifactReturnMode = null;
+      prototypeState.savedArtifactIds = [];
       prototypeState.artifactTrayOpen = false;
       prototypeState.chatHistoryOpen = false;
       prototypeState.workbenchArtifactId = null;
@@ -1987,7 +2011,7 @@ function transitionChatMode(nextMode) {
   const sourceRect = sourcePanel?.getBoundingClientRect();
   const shouldReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  if (nextMode === "fullscreen" && !prototypeState.activeArtifactId) {
+  if (nextMode === "fullscreen" && !prototypeState.activeArtifactId && getCurrentArtifactItems().length) {
     prototypeState.artifactTrayOpen = true;
   }
 

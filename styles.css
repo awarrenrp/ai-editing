@@ -824,6 +824,19 @@ button {
   background: var(--surface-low);
 }
 
+.artifact-empty,
+.artifact-takeover__empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 430;
+  line-height: 18px;
+}
+
+.artifact-empty {
+  padding: 2px 0;
+}
+
 .artifact-item__icon {
   display: grid;
   width: 24px;
