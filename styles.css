@@ -1377,6 +1377,33 @@ button {
   line-height: 16px;
 }
 
+.artifact-reader__footer {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid var(--outline-soft);
+  padding: 12px 28px;
+}
+
+.artifact-reader__action {
+  display: inline-flex;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  padding: 0 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 535;
+  line-height: 20px;
+}
+
+.artifact-reader__action:hover {
+  background: var(--surface-low);
+}
+
 .ai-composer {
   display: flex;
   min-width: 320px;
@@ -2919,6 +2946,10 @@ button {
 
   .artifact-reader__body {
     padding: 18px;
+  }
+
+  .artifact-reader__footer {
+    padding: 12px 18px;
   }
 
   .artifact-reader__metric-grid {

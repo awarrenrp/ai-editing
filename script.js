@@ -1229,6 +1229,7 @@ function ArtifactTabs() {
 function ArtifactReader() {
   const artifact = getActiveArtifact();
   const showHeaderClose = prototypeState.artifactMode !== "push";
+  const showFooterActions = prototypeState.artifactMode === "onTop";
   const metrics = artifact.metrics || [];
   const sections = artifact.sections || [];
   return `
@@ -1275,6 +1276,20 @@ function ArtifactReader() {
           )
           .join("")}
       </div>
+      ${
+        showFooterActions
+          ? `
+            <div class="artifact-reader__footer" aria-label="Artifact actions">
+              <button class="artifact-reader__action" type="button" data-action="edit-artifact-modal" data-artifact-id="${artifact.id}">
+                Edit
+              </button>
+              <button class="artifact-reader__action" type="button" data-action="save-artifact-modal" data-artifact-id="${artifact.id}">
+                Save
+              </button>
+            </div>
+          `
+          : ""
+      }
     </section>
   `;
 }
@@ -1583,11 +1598,17 @@ function openArtifact(artifactId) {
   renderAppLayout();
 }
 
-function saveArtifactToTray(artifactId) {
+function saveArtifactToTray(artifactId, { closeActiveArtifact = false } = {}) {
   if (!getArtifactById(artifactId)) return;
 
   if (!prototypeState.savedArtifactIds.includes(artifactId)) {
     prototypeState.savedArtifactIds = [...prototypeState.savedArtifactIds, artifactId];
+  }
+
+  if (closeActiveArtifact) {
+    prototypeState.activeArtifactId = null;
+    prototypeState.artifactSurfaceMode = "view";
+    prototypeState.artifactReturnMode = null;
   }
 
   prototypeState.artifactTrayOpen = false;
@@ -1704,7 +1725,10 @@ function editArtifactInWorkbench(artifactId) {
   }
 
   prototypeState.workbenchArtifactId = artifactId;
-  renderWorkbenchOnly();
+  prototypeState.activeArtifactId = null;
+  prototypeState.artifactSurfaceMode = "view";
+  prototypeState.artifactReturnMode = null;
+  renderAppLayout();
 }
 
 function runChatOutputAction(source, action) {
@@ -1888,8 +1912,26 @@ function bindLayoutInteractions() {
     transitionChatMode("sidebar");
   });
 
-  document.querySelector('[data-action="close-artifact"]')?.addEventListener("click", () => {
-    closeArtifactWithTransition();
+  bindArtifactSurfaceActions();
+}
+
+function bindArtifactSurfaceActions(root = document) {
+  root.querySelectorAll('[data-action="close-artifact"]').forEach((button) => {
+    button.addEventListener("click", () => {
+      closeArtifactWithTransition();
+    });
+  });
+
+  root.querySelectorAll('[data-action="edit-artifact-modal"]').forEach((button) => {
+    button.addEventListener("click", () => {
+      editArtifactInWorkbench(button.dataset.artifactId);
+    });
+  });
+
+  root.querySelectorAll('[data-action="save-artifact-modal"]').forEach((button) => {
+    button.addEventListener("click", () => {
+      saveArtifactToTray(button.dataset.artifactId, { closeActiveArtifact: true });
+    });
   });
 }
 
@@ -1960,9 +2002,7 @@ function renderArtifactSurfaceOnly() {
   }
 
   layout.insertAdjacentHTML("beforeend", ArtifactSurface());
-  document.querySelector('[data-action="close-artifact"]')?.addEventListener("click", () => {
-    closeArtifactWithTransition();
-  });
+  bindArtifactSurfaceActions(layout);
 }
 
 function closeArtifactWithTransition() {
