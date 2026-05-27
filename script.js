@@ -29,6 +29,8 @@ const Icon = {
   send: '<path d="M12 19V5M5 12l7-7 7 7"/>',
   save: '<path d="M5 3h12l2 2v16H5V3Z"/><path d="M8 3v6h8V3"/><path d="M8 21v-7h8v7"/>',
   arrowDownRight: '<path d="M7 7h10v10M7 17 17 7"/>',
+  arrowUp: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  arrowDown: '<path d="M12 5v14M6 13l6 6 6-6"/>',
   eye: '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/>',
   edit: '<path d="m14.5 4.5 5 5L8 21l-5 1 1-5L15.5 5.5Z"/><path d="m13 7 4 4"/>',
   document: '<path d="M7 3h7l4 4v14H7V3Z"/><path d="M14 3v5h5"/><path d="M10 12h6M10 15h6M10 18h4"/>',
@@ -309,10 +311,15 @@ function SideNav() {
 function AIComposer({ rich = false } = {}) {
   const draft = prototypeState.composerDraft || "";
   const canSend = draft.trim().length > 0;
+  const isEditing = Boolean(getEditingArtifactId());
+  const editingChip = isEditing
+    ? '<div class="composer-status"><span class="chat-output-editing-chip">Editing</span></div>'
+    : "";
 
   if (rich) {
     return `
-      <section class="ai-composer ai-composer--rich" data-node-id="1370:11582" aria-label="AI composer">
+      <section class="ai-composer ai-composer--rich ${isEditing ? "ai-composer--editing" : ""}" data-node-id="1370:11582" aria-label="AI composer">
+        ${editingChip}
         <div class="composer-stack">
           <div class="attachment-row">
             <div class="image-attachment">
@@ -340,7 +347,8 @@ function AIComposer({ rich = false } = {}) {
   }
 
   return `
-    <section class="ai-composer ai-composer--compact" data-node-id="28:12366" aria-label="AI composer">
+    <section class="ai-composer ai-composer--compact ${isEditing ? "ai-composer--editing" : ""}" data-node-id="28:12366" aria-label="AI composer">
+      ${editingChip}
       <textarea class="composer-input" data-chat-input rows="2" aria-label="Message Rippling AI" placeholder="Ask, make, or search anything...">${escapeHtml(draft)}</textarea>
       ${ComposerActions({ primary: canSend })}
     </section>
@@ -372,6 +380,14 @@ const promptItems = [
     artifactId: "time-attendance-report"
   },
   {
+    label: "show me my turnover rate for the year",
+    artifactId: "turnover-rate-year"
+  },
+  {
+    label: "show me my under and over utilized employees",
+    artifactId: "employee-utilization-review"
+  },
+  {
     label: "Identify employees who are not promoted in last 2 years",
     artifactId: "promotion-review"
   }
@@ -386,19 +402,19 @@ function PromptChip({ label, artifactId }) {
   `;
 }
 
-function ArtifactPreview({ artifactId, variant = "compact", interactive = false } = {}) {
+function ArtifactPreview({ artifactId, variant = "compact", interactive = false, showMoreMenu = true, promoted = null } = {}) {
   const artifact = getArtifactById(artifactId);
 
   if (artifact?.tablePreview) {
-    return TablePreview({ artifactId, variant, interactive });
+    return TablePreview({ artifactId, variant, interactive, showMoreMenu, promoted });
   }
 
-  return ReportPreview({ artifactId, variant, interactive });
+  return ReportPreview({ artifactId, variant, interactive, showMoreMenu });
 }
 
 const artifactMoreActions = [
-  { id: "download", label: "Download", icon: "download", selected: true },
-  { id: "duplicate", label: "Duplicate", icon: "copy" },
+  { id: "download", label: "Download", icon: "download" },
+  { id: "copy", label: "Copy", icon: "copy" },
   { id: "edit", label: "Edit", icon: "edit" },
   { type: "separator" },
   { id: "pin", label: "Pin", icon: "star" },
@@ -456,7 +472,7 @@ function ArtifactMoreMenu({ artifactId } = {}) {
   `;
 }
 
-function ReportPreview({ artifactId, variant = "compact", interactive = false } = {}) {
+function ReportPreview({ artifactId, variant = "compact", interactive = false, showMoreMenu = true } = {}) {
   const artifact = getArtifactById(artifactId);
   const preview = artifact?.reportPreview;
   if (!preview) return "";
@@ -469,7 +485,7 @@ function ReportPreview({ artifactId, variant = "compact", interactive = false } 
       <div class="report-preview__header">
         <h3>${escapeHtml(preview.title)}</h3>
         ${
-          interactive
+          interactive && showMoreMenu
             ? ArtifactMoreMenu({ artifactId })
             : ""
         }
@@ -506,6 +522,17 @@ function renderTableCell(value, column) {
     return `<span class="table-status table-status--${status.tone || "neutral"}"><i></i>${escapeHtml(status.label)}</span>`;
   }
 
+  if (column.type === "utilization") {
+    const utilization = typeof value === "object" ? value : { value, trend: null };
+    const trend = utilization.trend === "down" ? "down" : "up";
+    return `
+      <span class="table-utilization table-utilization--${trend}">
+        <span>${escapeHtml(utilization.value)}</span>
+        ${svgIcon(trend === "down" ? "arrowDown" : "arrowUp", 14)}
+      </span>
+    `;
+  }
+
   if (column.type === "link") {
     return `<span class="table-link">${escapeHtml(value)}</span>`;
   }
@@ -513,19 +540,22 @@ function renderTableCell(value, column) {
   return escapeHtml(value);
 }
 
-function TablePreview({ artifactId, variant = "compact", interactive = false } = {}) {
+function TablePreview({ artifactId, variant = "compact", interactive = false, showMoreMenu = true, promoted = null } = {}) {
   const artifact = getArtifactById(artifactId);
   const table = artifact?.tablePreview;
   if (!table) return "";
 
   const isCompact = variant === "compact";
+  const isPromoted = promoted ?? isArtifactPromoted(artifactId);
+  const isTrackerStyle = table.displayStyle === "tracker";
   const columns = isCompact ? table.columns.filter((column) => column.compact !== false) : table.columns;
   const rows = isCompact ? table.rows.slice(0, table.compactRows || 4) : table.rows;
   const actionAttrs = interactive ? `role="button" tabindex="0" data-action="view-chat-output" data-artifact-id="${artifactId}" aria-label="View ${escapeHtml(artifact.label)}"` : "";
 
   return `
-    <div class="table-preview table-preview--${variant}" data-node-id="883:13314" ${actionAttrs}>
-      ${interactive ? `<div class="table-preview__more">${ArtifactMoreMenu({ artifactId })}</div>` : ""}
+    <div class="table-preview table-preview--${variant} ${isPromoted ? "table-preview--promoted" : "table-preview--widget"} ${isTrackerStyle ? "table-preview--tracker" : ""}" data-node-id="883:13314" ${actionAttrs}>
+      ${interactive && showMoreMenu ? `<div class="table-preview__more">${ArtifactMoreMenu({ artifactId })}</div>` : ""}
+      ${isTrackerStyle ? `<div class="table-preview__titlebar"><h3>${escapeHtml(table.title)}</h3></div>` : ""}
       <div class="table-preview__scroller">
         <table aria-label="${escapeHtml(table.title)}">
           <thead>
@@ -535,6 +565,7 @@ function TablePreview({ artifactId, variant = "compact", interactive = false } =
                   (column) => `
                     <th class="table-preview__cell--${column.type || "text"}" style="width: ${column.width || "auto"}">
                       <span>${escapeHtml(column.label)}</span>
+                      ${isTrackerStyle ? svgIcon("chevronDown", 12) : ""}
                     </th>
                   `
                 )
@@ -566,6 +597,36 @@ function TablePreview({ artifactId, variant = "compact", interactive = false } =
   `;
 }
 
+function ChatOutputMetrics(metrics = []) {
+  if (!metrics.length) return "";
+
+  return `
+    <div class="chat-output-metrics" aria-label="Utilization summary">
+      ${metrics
+        .map(
+          (metric) => `
+            <div class="chat-output-metric">
+              <strong>${escapeHtml(metric.value)}</strong>
+              <span>${escapeHtml(metric.label)}</span>
+            </div>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function ChatOutputInsight(insight) {
+  if (!insight) return "";
+
+  return `
+    <div class="chat-output-insight" role="note">
+      <strong>Insight</strong>
+      <span>${escapeHtml(insight)}</span>
+    </div>
+  `;
+}
+
 function ChatOutputSummary(message) {
   const blocks = message.summaryBlocks || (message.summaryTitle || message.summary || message.details
     ? [
@@ -577,31 +638,36 @@ function ChatOutputSummary(message) {
       ]
     : null);
 
-  if (!blocks) {
+  if (!blocks && !message.metrics?.length) {
     return `<p>${escapeHtml(message.body)}</p>`;
   }
 
   return `
     <div class="chat-output-summary">
-      ${blocks
-        .map(
-          (block) => `
-            <section class="chat-output-summary__block">
-              ${block.title ? `<h2>${escapeHtml(block.title)}</h2>` : ""}
-              ${block.summary ? `<p><strong>Summary:</strong> ${escapeHtml(block.summary)}</p>` : ""}
-              ${
-                block.details?.length
-                  ? `
-                    <div class="chat-output-summary__details">
-                      ${block.details.map((detail) => `<p>${escapeHtml(detail)}</p>`).join("")}
-                    </div>
-                  `
-                  : ""
-              }
-            </section>
-          `
-        )
-        .join("")}
+      ${
+        blocks
+          ? blocks
+              .map(
+                (block) => `
+                  <section class="chat-output-summary__block">
+                    ${block.title ? `<h2>${escapeHtml(block.title)}</h2>` : ""}
+                    ${block.summary ? `<p><strong>Summary:</strong> ${escapeHtml(block.summary)}</p>` : ""}
+                    ${
+                      block.details?.length
+                        ? `
+                          <div class="chat-output-summary__details">
+                            ${block.details.map((detail) => `<p>${escapeHtml(detail)}</p>`).join("")}
+                          </div>
+                        `
+                        : ""
+                    }
+                  </section>
+                `
+              )
+              .join("")
+          : `<p>${escapeHtml(message.body)}</p>`
+      }
+      ${ChatOutputMetrics(message.metrics)}
     </div>
   `;
 }
@@ -623,6 +689,7 @@ function ChatThread({ mode = "sidebar" } = {}) {
   }
 
   const previewVariant = mode === "fullscreen" ? "large" : "compact";
+  const editingArtifactId = getEditingArtifactId();
 
   return `
     <div class="chat-thread" role="log" aria-live="polite" aria-label="Chat messages">
@@ -630,14 +697,31 @@ function ChatThread({ mode = "sidebar" } = {}) {
         .map((message) => {
           const canSaveWidget = isTableWidgetArtifact(message.artifactId);
           const isSavedWidget = canSaveWidget && prototypeState.savedArtifactIds.includes(message.artifactId);
+          const isDashboardOutput = Boolean(message.metrics?.length);
+          const isEditingOutput = message.artifactId && editingArtifactId === message.artifactId;
+          const outputClassName = message.role === "assistant"
+            ? [
+                "chat-output",
+                message.preview ? "chat-output--has-preview" : "",
+                isDashboardOutput ? "chat-output--dashboard" : "",
+                isEditingOutput ? "chat-output--editing" : ""
+              ].filter(Boolean).join(" ")
+            : "chat-bubble";
+          const articleClassName = [
+            "chat-message",
+            `chat-message--${message.role}`,
+            isEditingOutput ? "chat-message--editing" : ""
+          ].filter(Boolean).join(" ");
 
           return `
-            <article class="chat-message chat-message--${message.role}">
-              <div class="${message.role === "assistant" ? `chat-output ${message.preview ? "chat-output--has-preview" : ""}` : "chat-bubble"}">
+            <article class="${articleClassName}">
+              <div class="${outputClassName}">
+                ${isDashboardOutput && message.artifactId && !isEditingOutput ? `<div class="chat-output-dashboard-menu">${ArtifactMoreMenu({ artifactId: message.artifactId })}</div>` : ""}
                 ${message.role === "assistant" ? ChatOutputSummary(message) : `<p>${escapeHtml(message.body)}</p>`}
-                ${message.preview === "report" ? ArtifactPreview({ artifactId: message.artifactId, variant: previewVariant, interactive: true }) : ""}
+                ${message.preview === "report" ? ArtifactPreview({ artifactId: message.artifactId, variant: previewVariant, interactive: true, showMoreMenu: !isDashboardOutput }) : ""}
+                ${message.role === "assistant" ? ChatOutputInsight(message.insight) : ""}
                 ${
-                  message.artifactId
+                  message.artifactId && !isEditingOutput
                     ? `
                       ${message.preview === "report" ? "" : `<button class="icon-button chat-output-more" type="button" aria-label="More actions" title="More actions">${svgIcon("more", 18)}</button>`}
                       <div class="chat-output-action-row" aria-label="Output actions">
@@ -645,10 +729,6 @@ function ChatThread({ mode = "sidebar" } = {}) {
                           <button class="chat-output-action" type="button" data-action="view-chat-output" data-artifact-id="${message.artifactId}">
                             ${svgIcon("eye", 14)}
                             <span>View</span>
-                          </button>
-                          <button class="chat-output-action" type="button" data-action="edit-chat-output" data-artifact-id="${message.artifactId}">
-                            ${svgIcon("edit", 14)}
-                            <span>Edit</span>
                           </button>
                         </div>
                         ${
@@ -1182,6 +1262,100 @@ const artifactItems = [
     ]
   },
   {
+    id: "turnover-rate-year",
+    label: "Turnover rate by quarter",
+    eyebrow: "Workforce report",
+    icon: ArtifactTrayAssets.chart,
+    tone: "berry",
+    summary: "A yearly turnover report showing quarterly turnover rate, exits, and average headcount so HR can spot where attrition accelerated.",
+    metrics: [
+      { value: "12.4%", label: "yearly turnover rate" },
+      { value: "31", label: "employee exits" },
+      { value: "250", label: "average headcount" }
+    ],
+    reportPreview: {
+      title: "Turnover rate for the year",
+      yLabel: "Turnover rate",
+      xLabel: "2026",
+      ticks: [16, 12, 8, 4, 0],
+      bars: [
+        { label: "Q1", value: 9.6 },
+        { label: "Q2", value: 11.8 },
+        { label: "Q3", value: 14.2 },
+        { label: "Q4", value: 13.7 }
+      ]
+    },
+    sections: [
+      {
+        title: "Calculation",
+        body: "Annual turnover is calculated as employee exits divided by average headcount, with voluntary and involuntary exits kept in the detail view."
+      },
+      {
+        title: "Trend",
+        body: "Turnover increased in the second half of the year, peaking in Q3 before easing slightly in Q4."
+      },
+      {
+        title: "Recommended next step",
+        body: "Break the Q3 and Q4 exits down by department, manager, tenure band, and regrettable attrition flag."
+      }
+    ]
+  },
+  {
+    id: "employee-utilization-review",
+    label: "Employee utilization review",
+    eyebrow: "Utilization analysis",
+    icon: ArtifactTrayAssets.document,
+    tone: "berry",
+    summary: "A utilization table identifying employees who are below or above target utilization based on scheduled capacity and actual assigned work.",
+    responseSummaryBlocks: [
+      {
+        title: "Utilization review",
+        summary: "I found 12 employees outside their target utilization band based on scheduled capacity versus assigned work."
+      }
+    ],
+    responseInsight: "You'll get more from this response by logging hours consistently in T&A",
+    responseMetrics: [
+      { value: "7", label: "under-utilized employees" },
+      { value: "5", label: "over-utilized employees" },
+      { value: "82%", label: "median utilization" }
+    ],
+    tablePreview: {
+      title: "Under and over utilized employees",
+      displayStyle: "tracker",
+      compactRows: 5,
+      columns: [
+        { key: "employee", label: "Employee", width: "168px" },
+        { key: "department", label: "Department", width: "132px" },
+        { key: "utilization", label: "Utilization", type: "utilization", width: "118px" },
+        { key: "target", label: "Target", width: "84px", compact: false },
+        { key: "status", label: "Status", type: "status", width: "118px" },
+        { key: "action", label: "Action", width: "188px", compact: false }
+      ],
+      rows: [
+        { employee: "Alex Morgan", department: "Clinical", utilization: { value: "118%", trend: "up" }, target: "85%", status: { label: "Over", tone: "warning" }, action: "Rebalance high-acuity shifts" },
+        { employee: "Priya Shah", department: "Administration", utilization: { value: "112%", trend: "up" }, target: "85%", status: { label: "Over", tone: "warning" }, action: "Shift project work to open capacity" },
+        { employee: "Nora Kim", department: "Billing", utilization: { value: "107%", trend: "up" }, target: "85%", status: { label: "Over", tone: "warning" }, action: "Review backlog ownership" },
+        { employee: "Miles Carter", department: "Marketing and Sales", utilization: { value: "51%", trend: "down" }, target: "80%", status: { label: "Under", tone: "neutral" }, action: "Assign campaign analysis" },
+        { employee: "Sam Rivera", department: "Accounting", utilization: { value: "58%", trend: "down" }, target: "80%", status: { label: "Under", tone: "neutral" }, action: "Add close support tasks" },
+        { employee: "Taylor Chen", department: "Clinical", utilization: { value: "62%", trend: "down" }, target: "85%", status: { label: "Under", tone: "neutral" }, action: "Review schedule availability" }
+      ]
+    },
+    sections: [
+      {
+        title: "Method",
+        body: "Compared assigned work hours against planned available capacity for the current year, then flagged employees outside the utilization band."
+      },
+      {
+        title: "Over-utilized group",
+        body: "Employees above target are concentrated in Clinical, Administration, and Billing, where urgent work is pulling capacity forward."
+      },
+      {
+        title: "Under-utilized group",
+        body: "Employees below target have enough available capacity to absorb project work or coverage from over-utilized teammates."
+      }
+    ]
+  },
+  {
     id: "promotion-review",
     label: "Promotion review candidates",
     eyebrow: "Talent analysis",
@@ -1221,6 +1395,14 @@ function isTableWidgetArtifact(artifactId) {
 function isAutoSavedArtifact(artifactId) {
   const artifact = getArtifactById(artifactId);
   return Boolean(artifact && !artifact.tablePreview);
+}
+
+function getEditingArtifactId() {
+  return prototypeState.editingArtifactId || prototypeState.workbenchArtifactId || (prototypeState.artifactSurfaceMode === "edit" ? prototypeState.activeArtifactId : null);
+}
+
+function isArtifactPromoted(artifactId) {
+  return Boolean(artifactId && (prototypeState.savedArtifactIds.includes(artifactId) || getEditingArtifactId() === artifactId));
 }
 
 function getAutoSavedArtifactIds(artifactIds) {
@@ -1387,9 +1569,14 @@ function ArtifactReader() {
         showFooterActions
           ? `
             <div class="artifact-reader__footer" aria-label="Artifact actions">
-              <button class="artifact-reader__action" type="button" data-action="edit-artifact-modal" data-artifact-id="${artifact.id}">
-                Edit
-              </button>
+              <div class="artifact-reader__footer-actions">
+                <button class="artifact-reader__action" type="button" data-action="edit-artifact-modal" data-artifact-id="${artifact.id}">
+                  Edit
+                </button>
+                <button class="artifact-reader__action" type="button" data-action="close-artifact">
+                  Close
+                </button>
+              </div>
             </div>
           `
           : ""
@@ -1570,6 +1757,23 @@ function Workbench() {
   `;
 }
 
+function SnackbarHost() {
+  const snackbar = prototypeState.snackbar;
+  if (!snackbar) return "";
+
+  return `
+    <div class="snackbar-host" aria-live="polite" aria-atomic="true">
+      <div class="snackbar snackbar--${snackbar.appearance || "success"}" data-node-id="44128:98842" role="status">
+        <span class="snackbar__icon" aria-hidden="true">${svgIcon("check", 20)}</span>
+        <span class="snackbar__message">${escapeHtml(snackbar.message)}</span>
+        <button class="icon-button snackbar__dismiss" type="button" data-action="dismiss-snackbar" aria-label="Dismiss notification" title="Dismiss notification">
+          ${svgIcon("close", 16)}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
 const prototypeState = {
   chatMode: "sidebar",
   artifactMode: "onTop",
@@ -1587,9 +1791,13 @@ const prototypeState = {
   savedArtifactIds: [],
   activeConversationId: null,
   workbenchArtifactId: null,
+  editingArtifactId: null,
+  snackbar: null,
   navExpanded: false,
   navPinState: "unpinned"
 };
+
+let snackbarTimer = null;
 
 const chatLayoutMotion = {
   duration: 200,
@@ -1603,6 +1811,7 @@ function App() {
       <div class="${getAppLayoutClassName()}">
         ${AppLayout()}
       </div>
+      <div id="snackbar-root">${SnackbarHost()}</div>
     </div>
   `;
 }
@@ -1682,6 +1891,7 @@ function openArtifact(artifactId) {
   prototypeState.artifactTrayOpen = false;
   prototypeState.artifactMenuOpen = false;
   prototypeState.activeArtifactActionMenuId = null;
+  prototypeState.editingArtifactId = null;
 
   if (prototypeState.artifactMode !== "onTop" && prototypeState.chatMode !== "fullscreen") {
     transitionChatMode("fullscreen");
@@ -1703,6 +1913,8 @@ function resolveArtifactFromText(text) {
   if (exactPrompt) return exactPrompt.artifactId;
   if (normalized.includes("40") || normalized.includes("overtime") || (normalized.includes("policy") && normalized.includes("hour"))) return "hours-policy";
   if (normalized.includes("t&a") || normalized.includes("time and attendance") || (normalized.includes("start") && normalized.includes("finish"))) return "time-attendance-report";
+  if (normalized.includes("turnover") || normalized.includes("attrition")) return "turnover-rate-year";
+  if (normalized.includes("utilized") || normalized.includes("utilization") || (normalized.includes("under") && normalized.includes("over"))) return "employee-utilization-review";
   if (normalized.includes("promot")) return "promotion-review";
 
   return null;
@@ -1721,15 +1933,20 @@ function buildAssistantMessage(artifactId) {
   const responseByArtifactId = {
     "hours-policy": "I drafted a 40+ hour reduction policy with manager review thresholds, exception handling, and follow-up guidance. Use View to open the artifact or Edit to work on it in the canvas.",
     "time-attendance-report": "I built a T&A report outline with start times, finish times, actual hours, and exception fields. Use View to open the artifact or Edit to work on it in the canvas.",
+    "turnover-rate-year": "I calculated your turnover rate for the year and broke it out by quarter so you can see where attrition accelerated.",
+    "employee-utilization-review": "I identified under and over utilized employees based on scheduled capacity versus assigned work, with recommended next actions for each group.",
     "promotion-review": "I identified employees who have not had a promotion recorded in the last two years and included review columns for manager calibration. Use View to open the artifact or Edit to work on it in the canvas."
   };
 
   return {
     role: "assistant",
     body: responseByArtifactId[artifactId] || `I created ${artifact.label} and opened it for review.`,
+    summaryBlocks: artifact.responseSummaryBlocks || null,
     artifactId,
     actionLabel: `Open ${artifact.label}`,
-    preview: artifact.reportPreview || artifact.tablePreview ? "report" : null
+    preview: artifact.reportPreview || artifact.tablePreview ? "report" : null,
+    metrics: artifact.responseMetrics || null,
+    insight: artifact.responseInsight || null
   };
 }
 
@@ -1785,6 +2002,7 @@ function loadConversation(conversationId) {
   prototypeState.activeArtifactActionMenuId = null;
   prototypeState.chatHistoryOpen = false;
   prototypeState.workbenchArtifactId = null;
+  prototypeState.editingArtifactId = null;
 
   renderAppLayout();
 }
@@ -1810,12 +2028,15 @@ function sendChatMessage(text, preferredArtifactId = null) {
   prototypeState.artifactTrayOpen = false;
   prototypeState.artifactMenuOpen = false;
   prototypeState.activeArtifactActionMenuId = null;
+  prototypeState.editingArtifactId = null;
 
   renderAppLayout();
 }
 
 function editArtifactInWorkbench(artifactId) {
   if (!getArtifactById(artifactId)) return;
+  prototypeState.editingArtifactId = artifactId;
+  addArtifactsToTray([artifactId]);
 
   if (prototypeState.chatMode === "fullscreen") {
     prototypeState.artifactTrayOpen = false;
@@ -1876,6 +2097,81 @@ function updateComposerSendState(input) {
   sendButton?.setAttribute("aria-disabled", `${!canSend}`);
 }
 
+function getArtifactClipboardText(artifactId) {
+  const artifact = getArtifactById(artifactId);
+  if (!artifact) return "";
+
+  const lines = [artifact.label, artifact.summary];
+
+  if (artifact.metrics?.length) {
+    lines.push("", "Snapshot");
+    artifact.metrics.forEach((metric) => {
+      lines.push(`${metric.label}: ${metric.value}`);
+    });
+  }
+
+  if (artifact.sections?.length) {
+    lines.push("");
+    artifact.sections.forEach((section) => {
+      lines.push(section.title, section.body, "");
+    });
+  }
+
+  if (artifact.tablePreview) {
+    lines.push(artifact.tablePreview.title);
+    lines.push(artifact.tablePreview.columns.map((column) => column.label).join("\t"));
+    artifact.tablePreview.rows.forEach((row) => {
+      lines.push(
+        artifact.tablePreview.columns
+          .map((column) => {
+            const value = row[column.key];
+            return typeof value === "object" ? value.label || value.value : value;
+          })
+          .join("\t")
+      );
+    });
+  }
+
+  return lines.filter(Boolean).join("\n");
+}
+
+async function copyArtifactToClipboard(artifactId) {
+  const text = getArtifactClipboardText(artifactId);
+  if (!text) return;
+
+  try {
+    await navigator.clipboard?.writeText(text);
+  } catch {
+    // The prototype still shows the intended feedback if clipboard access is unavailable.
+  }
+}
+
+function showSnackbar(message, appearance = "success") {
+  prototypeState.snackbar = { message, appearance };
+  renderSnackbarOnly();
+
+  if (snackbarTimer) {
+    window.clearTimeout(snackbarTimer);
+  }
+
+  snackbarTimer = window.setTimeout(() => {
+    prototypeState.snackbar = null;
+    snackbarTimer = null;
+    renderSnackbarOnly();
+  }, 3200);
+}
+
+function dismissSnackbar() {
+  prototypeState.snackbar = null;
+
+  if (snackbarTimer) {
+    window.clearTimeout(snackbarTimer);
+    snackbarTimer = null;
+  }
+
+  renderSnackbarOnly();
+}
+
 function bindLayoutInteractions() {
   document.querySelector('[data-action="nav-hover-zone"]')?.addEventListener("mouseenter", () => {
     setNavExpanded(true);
@@ -1914,12 +2210,6 @@ function bindLayoutInteractions() {
     });
   });
 
-  document.querySelectorAll('[data-action="edit-chat-output"]').forEach((button) => {
-    button.addEventListener("click", () => {
-      runChatOutputAction(button, "edit");
-    });
-  });
-
   document.querySelectorAll('[data-action="save-chat-output"]').forEach((button) => {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -1942,9 +2232,10 @@ function bindLayoutInteractions() {
   });
 
   document.querySelectorAll('[data-action="artifact-menu-command"]').forEach((button) => {
-    button.addEventListener("click", (event) => {
+    button.addEventListener("click", async (event) => {
       event.stopPropagation();
       const command = button.dataset.menuCommand;
+      const artifactId = button.dataset.artifactId;
 
       if (command === "edit") {
         prototypeState.activeArtifactActionMenuId = null;
@@ -1954,6 +2245,16 @@ function bindLayoutInteractions() {
 
       prototypeState.activeArtifactActionMenuId = null;
       renderAppLayout();
+
+      if (command === "download") {
+        showSnackbar("Downloaded");
+        return;
+      }
+
+      if (command === "copy") {
+        await copyArtifactToClipboard(artifactId);
+        showSnackbar("Copied to clipboard");
+      }
     });
   });
 
@@ -2008,6 +2309,7 @@ function bindLayoutInteractions() {
       prototypeState.activeArtifactActionMenuId = null;
       prototypeState.chatHistoryOpen = false;
       prototypeState.workbenchArtifactId = null;
+      prototypeState.editingArtifactId = null;
       renderAppLayout();
     });
   });
@@ -2100,6 +2402,15 @@ function bindArtifactSurfaceActions(root = document) {
 function bindInteractions() {
   bindTopNavInteractions();
   bindLayoutInteractions();
+  bindSnackbarInteractions();
+}
+
+function bindSnackbarInteractions() {
+  document.querySelectorAll('[data-action="dismiss-snackbar"]').forEach((button) => {
+    button.addEventListener("click", () => {
+      dismissSnackbar();
+    });
+  });
 }
 
 function setArtifactTrayOpen(isOpen) {
@@ -2181,6 +2492,7 @@ function closeArtifactWithTransition() {
     prototypeState.activeArtifactId = null;
     prototypeState.artifactSurfaceMode = "view";
     prototypeState.artifactReturnMode = null;
+    prototypeState.editingArtifactId = null;
 
     if (returnMode !== prototypeState.chatMode) {
       transitionChatMode(returnMode);
@@ -2205,6 +2517,7 @@ function closeArtifactWithTransition() {
     prototypeState.activeArtifactId = null;
     prototypeState.artifactSurfaceMode = "view";
     prototypeState.artifactReturnMode = null;
+    prototypeState.editingArtifactId = null;
 
     if (returnMode !== prototypeState.chatMode) {
       transitionChatMode(returnMode);
@@ -2301,6 +2614,17 @@ function renderAppLayout() {
   layout.innerHTML = AppLayout();
   bindLayoutInteractions();
   syncChatViewport();
+}
+
+function renderSnackbarOnly() {
+  const root = document.getElementById("snackbar-root");
+  if (!root) {
+    renderApp();
+    return;
+  }
+
+  root.innerHTML = SnackbarHost();
+  bindSnackbarInteractions();
 }
 
 function renderWorkbenchOnly() {
