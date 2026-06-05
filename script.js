@@ -1,53 +1,51 @@
 const Icon = {
   menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
   chevronDown: '<path d="m7 10 5 5 5-5"/>',
+  chevronUp: '<path d="m7 14 5-5 5 5"/>',
   chevronRight: '<path d="m9 6 6 6-6 6"/>',
   search: '<circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>',
   help: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="m5.6 5.6 4 4M18.4 5.6l-4 4M18.4 18.4l-4-4M5.6 18.4l4-4"/>',
   globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
-  chat: '<path d="M5 5h14v10H9l-4 4V5Z"/>',
+  chat: '<path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/>',
+  barChart: '<path d="M3 20h18"/><path d="M7 16V8"/><path d="M12 16V4"/><path d="M17 16v-6"/>',
   bell: '<path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7"/><path d="M10 20a2 2 0 0 0 4 0"/>',
   check: '<path d="m5 12 4 4 10-10"/>',
   close: '<path d="M6 6 18 18M18 6 6 18"/>',
-  copy: '<rect x="8" y="8" width="11" height="11" rx="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V5a2 2 0 0 1 2-2h9a1 1 0 0 1 1 1v1"/>',
-  download: '<path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/>',
-  expand: '<path d="M8 3H3v5M16 3h5v5M8 21H3v-5M21 16v5h-5"/><path d="M3 3l7 7M21 3l-7 7M3 21l7-7M21 21l-7-7"/>',
-  more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
-  org: '<path d="M12 4v5M6 20v-5h12v5M6 15V9h12v6"/><rect x="9" y="2" width="6" height="4"/><rect x="3" y="18" width="6" height="4"/><rect x="15" y="18" width="6" height="4"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  download: '<path d="M12 3v11"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
+  expand: '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="M9 21H3v-6"/><path d="m3 21 7-7"/><path d="M21 15v6h-6"/><path d="m21 21-7-7"/><path d="M3 9V3h6"/><path d="m3 3 7 7"/>',
+  more: '<path fill="currentColor" stroke="none" d="M5 13.6a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2Zm7 0a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2Zm7 0a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2Z"/>',
+  org: '<rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4"/><path d="M6 16v-4h12v4"/>',
   star: '<path d="m12 3 2.7 5.5 6 .9-4.3 4.2 1 6-5.4-2.9-5.4 2.9 1-6-4.3-4.2 6-.9L12 3Z"/>',
   users: '<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87"/><path d="M17 3.13a4 4 0 0 1 0 7.75"/>',
-  dollar: '<circle cx="12" cy="12" r="9"/><path d="M12 6v12M15 9.5c-.6-1-1.7-1.5-3-1.5-1.7 0-3 1-3 2.4 0 3 6 1.8 6 5.1 0 1.4-1.3 2.5-3 2.5-1.4 0-2.7-.6-3.4-1.8"/>',
-  heart: '<path d="M20.8 8.6a5.5 5.5 0 0 0-9.5-3.8L12 5.5l.7-.7a5.5 5.5 0 0 1 7.8 7.8L12 21 3.5 12.6a5.5 5.5 0 0 1 7.8-7.8l.7.7"/>',
-  laptop: '<path d="M4 6h16v10H4z"/><path d="M2 20h20M8 10h8"/>',
+  dollar: '<circle cx="12" cy="12" r="9"/><path d="M12 6v12"/><path d="M16 9.5a3.8 3.8 0 0 0-3-1.3c-1.8 0-3 .8-3 2s1.2 1.7 3 2.2 3 1 3 2.4-1.2 2-3 2a4.2 4.2 0 0 1-3.6-1.8"/>',
+  heart: '<path d="M20.8 8.7a5.4 5.4 0 0 0-9.2-3.8L12 5.3l.4-.4a5.4 5.4 0 0 1 7.6 7.6L12 21l-8-8.5A5.4 5.4 0 0 1 11.6 4.9l.4.4"/>',
+  laptop: '<path d="M4 5h16v11H4Z"/><path d="M2 20h20"/><path d="M8 20v-1h8v1"/>',
   card: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/>',
-  custom: '<path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="m8 9 4 2 4-2M8 15l4-2 4 2"/>',
-  briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2M3 12h18"/>',
-  data: '<path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3Z"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
-  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a8 8 0 0 0 .1-1l2-1.5-2-3.5-2.4 1a7 7 0 0 0-1.7-1L15 6.4h-4L10.6 9a7 7 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a8 8 0 0 0 0 2l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7 7 0 0 0 1.7-1l2.4 1 2-3.5-2.1-1.5Z"/>',
-  pin: '<path d="m15 4 5 5-4 1-4 7-3-3 7-4-1-6ZM9 14l-5 5"/>',
+  custom: '<path d="M12 3 4 7.5v9L12 21l8-4.5v-9Z"/><path d="m8 9.5 4 2.2 4-2.2"/><path d="M12 21v-9.3"/>',
+  briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/>',
+  data: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
+  settings: '<path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a7.8 7.8 0 0 0 .1-1l2-1.5-2-3.5-2.4 1a7 7 0 0 0-1.7-1L15 6.4h-4L10.6 9a7 7 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a7.8 7.8 0 0 0 0 2l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7 7 0 0 0 1.7-1l2.4 1 2-3.5Z"/>',
+  pin: '<path d="m15 4 5 5-4 1-4 7-3-3 7-4Z"/><path d="m9 14-5 5"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   send: '<path d="M12 19V5M5 12l7-7 7 7"/>',
-  save: '<path d="M5 3h12l2 2v16H5V3Z"/><path d="M8 3v6h8V3"/><path d="M8 21v-7h8v7"/>',
-  arrowDownRight: '<path d="M7 7h10v10M7 17 17 7"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l3 3Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h9"/>',
+  arrowDownRight: '<path d="M7 7h10v10"/><path d="m7 17 10-10"/>',
   arrowUp: '<path d="M12 19V5M6 11l6-6 6 6"/>',
   arrowDown: '<path d="M12 5v14M6 13l6 6 6-6"/>',
   eye: '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/>',
-  edit: '<path d="m14.5 4.5 5 5L8 21l-5 1 1-5L15.5 5.5Z"/><path d="m13 7 4 4"/>',
-  document: '<path d="M7 3h7l4 4v14H7V3Z"/><path d="M14 3v5h5"/><path d="M10 12h6M10 15h6M10 18h4"/>',
-  commentPlus: '<path d="M4 5h16v12H9l-5 4V5Z"/><path d="M12 8v6M9 11h6"/>',
-  sliders: '<path d="M4 7h10M18 7h2M16 5v4M4 12h2M10 12h10M8 10v4M4 17h12M20 17h0M18 15v4"/>',
-  newChat: '<path d="m14.5 4.5 5 5L10 19l-5 1 1-5 9.5-9.5Z"/><path d="m13 6 5 5"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  document: '<path d="M7 3h7l5 5v13H7Z"/><path d="M14 3v5h5"/><path d="M10 13h6"/><path d="M10 17h6"/>',
+  commentPlus: '<path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M12 8v6"/><path d="M9 11h6"/>',
+  sliders: '<path d="M4 7h10"/><path d="M18 7h2"/><path d="M16 5v4"/><path d="M4 12h2"/><path d="M10 12h10"/><path d="M8 10v4"/><path d="M4 17h12"/><path d="M20 17h0"/><path d="M18 15v4"/>',
+  newChat: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
   sparkle: '<path fill="currentColor" stroke="none" d="M12 1.5c1.2 5 3.5 7.3 8.5 8.5-5 1.2-7.3 3.5-8.5 8.5-1.2-5-3.5-7.3-8.5-8.5 5-1.2 7.3-3.5 8.5-8.5Zm8 11.8c.6 2.4 1.7 3.5 4 4-2.3.6-3.4 1.7-4 4-.6-2.3-1.7-3.4-4-4 2.3-.5 3.4-1.6 4-4Z"/>'
 };
 
 const AiIconAsset = "assets/rippling-ai-filled.svg";
 
 const TopNavAssets = {
-  avatar: "https://www.figma.com/api/mcp/asset/9ffec698-d94d-44c4-9eb3-33d07e1ad60f",
-  logo: "https://www.figma.com/api/mcp/asset/03096164-b238-442e-8448-3d28d487c4b7",
-  search: "https://www.figma.com/api/mcp/asset/cf77c5f7-120d-411d-be9d-30b7b27d2c01",
-  help: "https://www.figma.com/api/mcp/asset/1b8622d4-e2ae-4586-a010-fd97b3308049",
-  messages: "https://www.figma.com/api/mcp/asset/151e7229-df95-4ef2-a2d6-f010dcbbf6c1",
   ai: AiIconAsset
 };
 
@@ -59,7 +57,28 @@ const ArtifactTrayAssets = {
 };
 
 function svgIcon(name, size = 20) {
-  return `<svg class="icon" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${Icon[name]}</svg>`;
+  return `<svg class="icon" style="--icon-size: ${size}px;" width="${size}" height="${size}" viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${Icon[name]}</svg>`;
+}
+
+function pdfFileIcon(size = 14) {
+  return `
+    <svg class="pdf-file-icon" width="${size}" height="${size}" viewBox="0 0 14 14" aria-hidden="true" fill="none">
+      <path d="M3.5 1.5h5.1l2.4 2.4v8.6H3.5v-11Z" fill="#D93025"/>
+      <path d="M8.5 1.5v2.6H11" fill="#F6B4AE"/>
+      <path d="M5 6.1h5M5 8h5M5 9.9h3.6" stroke="#fff" stroke-width=".8" stroke-linecap="round"/>
+    </svg>
+  `;
+}
+
+function googleDriveIcon(size = 22) {
+  return `
+    <svg class="google-drive-icon" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#188038" d="M8.96 3.5h5.82l6.38 11.05h-5.82L8.96 3.5Z"/>
+      <path fill="#1967D2" d="M5.44 19.7h12.74l2.98-5.15H8.42L5.44 19.7Z"/>
+      <path fill="#FBBC04" d="M8.96 3.5 2.84 14.55 5.44 19.7l6.38-11.05L8.96 3.5Z"/>
+      <path fill="#fff" d="m8.42 14.55 3.4-5.9 3.52 5.9H8.42Z"/>
+    </svg>
+  `;
 }
 
 function escapeHtml(value) {
@@ -88,34 +107,65 @@ function topNavAssetIcon(source, label, className = "") {
   `;
 }
 
-function topNavAssetButton(source, label, iconClass = "") {
+function topNavAssetButton(source, label, iconClass = "", attrs = "") {
   return `
-    <button class="icon-button top-nav__icon-button" type="button" aria-label="${label}" title="${label}">
+    <button class="icon-button top-nav__icon-button" type="button" aria-label="${label}" title="${label}" ${attrs}>
       ${topNavAssetIcon(source, label, iconClass)}
     </button>
+  `;
+}
+
+function RipplingMark() {
+  return `
+    <span class="rippling-mark__bars" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
   `;
 }
 
 const artifactOpenModes = [
   { id: "onTop", label: "On top" },
   { id: "onRight", label: "On right" },
-  { id: "push", label: "Push" }
+  { id: "push", label: "Push" },
+  { id: "onLeft", label: "On left" }
 ];
 
 const sideTrayModes = [
-  { id: "tray", label: "Tray", description: "Opens as the right drawer" },
-  { id: "takeover", label: "Full chat", description: "Slides over the side chat" }
+  { id: "tray", label: "Tray", description: "Shows artifacts inside the chat" },
+  { id: "takeover", label: "Full chat", description: "Slides over the side chat" },
+  { id: "bottomSheet", label: "Bottom sheet", description: "Slides up from the bottom" },
+  { id: "pushUp", label: "Dropdown", description: "Opens a compact menu from the chat header" },
+  { id: "sideCar", label: "Side car", description: "Opens in the right margin" }
 ];
 
-function getArtifactModeLabel() {
-  return artifactOpenModes.find((mode) => mode.id === prototypeState.artifactMode)?.label || "On top";
-}
+const artifactSettingPresets = [
+  {
+    id: "nearTerm",
+    label: "Near term",
+    description: "Open artifacts on the left and use the dropdown tray.",
+    artifactMode: "onLeft",
+    sideTrayMode: "pushUp"
+  },
+  {
+    id: "future",
+    label: "Future",
+    description: "Open artifacts on top and use the dropdown tray.",
+    artifactMode: "onTop",
+    sideTrayMode: "pushUp"
+  }
+];
 
-function getSideTrayModeLabel() {
-  return sideTrayModes.find((mode) => mode.id === prototypeState.sideTrayMode)?.label || "Tray";
+function getCurrentArtifactPreset() {
+  return artifactSettingPresets.find((preset) => preset.id === prototypeState.artifactPreset)
+    || artifactSettingPresets.find((preset) => preset.artifactMode === prototypeState.artifactMode && preset.sideTrayMode === prototypeState.sideTrayMode)
+    || artifactSettingPresets[1];
 }
 
 function ArtifactSettingsMenu() {
+  const currentPreset = getCurrentArtifactPreset();
+
   return `
     <div class="artifact-settings">
       <button
@@ -126,7 +176,7 @@ function ArtifactSettingsMenu() {
         aria-expanded="${prototypeState.settingsMenuOpen}"
       >
         ${svgIcon("sliders", 16)}
-        <span>Artifact settings</span>
+        <span>Artifact settings: ${escapeHtml(currentPreset.label)}</span>
         ${svgIcon("chevronDown", 14)}
       </button>
       ${
@@ -134,38 +184,22 @@ function ArtifactSettingsMenu() {
           ? `
             <div class="artifact-settings__menu" role="menu">
               <section class="artifact-settings__section">
-                <p>Artifact open</p>
-                ${artifactOpenModes
+                <p>Preset</p>
+                ${artifactSettingPresets
                   .map(
-                    (mode) => `
+                    (preset) => `
                       <button
-                        class="artifact-settings__item ${prototypeState.artifactMode === mode.id ? "is-selected" : ""}"
+                        class="artifact-settings__item artifact-settings__item--stack artifact-settings__item--preset ${currentPreset.id === preset.id ? "is-selected" : ""}"
                         type="button"
-                        data-artifact-mode="${mode.id}"
+                        data-artifact-preset="${preset.id}"
                         role="menuitemradio"
-                        aria-checked="${prototypeState.artifactMode === mode.id}"
+                        aria-checked="${currentPreset.id === preset.id}"
                       >
-                        <span>${mode.label}</span>
-                        ${prototypeState.artifactMode === mode.id ? svgIcon("check", 16) : ""}
-                      </button>
-                    `
-                  )
-                  .join("")}
-              </section>
-              <section class="artifact-settings__section">
-                <p>Side panel artifacts</p>
-                ${sideTrayModes
-                  .map(
-                    (mode) => `
-                      <button
-                        class="artifact-settings__item artifact-settings__item--stack ${prototypeState.sideTrayMode === mode.id ? "is-selected" : ""}"
-                        type="button"
-                        data-side-tray-mode="${mode.id}"
-                        role="menuitemradio"
-                        aria-checked="${prototypeState.sideTrayMode === mode.id}"
-                      >
-                        <span>${mode.label}</span>
-                        <small>${mode.description}</small>
+                        <span>
+                          ${escapeHtml(preset.label)}
+                          ${currentPreset.id === preset.id ? svgIcon("check", 16) : ""}
+                        </span>
+                        <small>${escapeHtml(preset.description)}</small>
                       </button>
                     `
                   )
@@ -183,25 +217,11 @@ function ChatArtifactMenu() {
   return `
     <div class="chat-artifact-menu">
       ${iconButton(
-        "more",
-        "Artifact actions",
-        `artifact-trigger chat-artifact-menu__trigger ${prototypeState.artifactMenuOpen ? "is-active" : ""}`,
-        `data-action="toggle-artifact-menu" aria-haspopup="true" aria-expanded="${prototypeState.artifactMenuOpen}"`
+        "info",
+        "Open artifacts",
+        `artifact-trigger chat-artifact-menu__trigger ${prototypeState.artifactTrayOpen ? "is-active" : ""}`,
+        `data-action="toggle-artifact-tray" aria-expanded="${prototypeState.artifactTrayOpen}"`
       )}
-      ${
-        prototypeState.artifactMenuOpen
-          ? `
-            <div class="chat-artifact-menu__panel" role="menu" aria-label="Artifact actions">
-              <button class="chat-artifact-menu__item" type="button" data-action="see-artifacts" role="menuitem">
-                <span>See artifacts</span>
-              </button>
-              <button class="chat-artifact-menu__item" type="button" data-action="share-chat" role="menuitem">
-                <span>Share</span>
-              </button>
-            </div>
-          `
-          : ""
-      }
     </div>
   `;
 }
@@ -211,7 +231,7 @@ function TopNav() {
     <header class="top-nav" data-node-id="1534:19677">
       <div class="top-nav__brand">
         <div class="rippling-mark" aria-hidden="true">
-          <img class="top-nav__logo-img" src="${TopNavAssets.logo}" alt="" />
+          ${RipplingMark()}
         </div>
         <div class="top-nav__product">
           <span>Analytics</span>
@@ -220,18 +240,18 @@ function TopNav() {
         </div>
       </div>
       <label class="top-nav__search">
-        ${topNavAssetIcon(TopNavAssets.search, "Search", "top-nav-asset-icon--search")}
+        ${svgIcon("search", 16)}
         <input aria-label="Search or jump to" placeholder="Search or jump to..." />
       </label>
       ${ArtifactSettingsMenu()}
       <div class="top-nav__actions">
-        ${topNavAssetButton(TopNavAssets.help, "Help", "top-nav-asset-icon--help")}
-        ${topNavAssetButton(TopNavAssets.messages, "Messages")}
-        ${topNavAssetButton(TopNavAssets.ai, "AI", "top-nav-asset-icon--top-ai")}
+        ${iconButton("help", "Help", "top-nav__icon-button")}
+        ${iconButton("chat", "Messages", "top-nav__icon-button")}
+        ${topNavAssetButton(TopNavAssets.ai, "Open AI chat", "top-nav-asset-icon--top-ai", 'data-action="open-side-chat"')}
         <div class="top-nav__divider"></div>
         <button class="top-nav__company" type="button" aria-label="Account menu">
           <span>Acme, Inc.</span>
-          <span class="avatar"><img src="${TopNavAssets.avatar}" alt="" /></span>
+          <span class="avatar" aria-hidden="true">N</span>
         </button>
       </div>
     </header>
@@ -268,7 +288,8 @@ function getNavPinLabel() {
 }
 
 function getAppLayoutClassName() {
-  return `app-layout app-layout--nav-${isNavExpanded() ? "expanded" : "collapsed"} app-layout--nav-pin-${prototypeState.navPinState}`;
+  const chatClosedClass = prototypeState.chatMode === "closed" ? " app-layout--chat-closed" : "";
+  return `app-layout app-layout--nav-${isNavExpanded() ? "expanded" : "collapsed"} app-layout--nav-pin-${prototypeState.navPinState}${chatClosedClass}`;
 }
 
 function NavItem([iconName, label, hasCaret], extraClass = "", attrs = "") {
@@ -372,19 +393,23 @@ function ComposerActions({ primary }) {
 
 const promptItems = [
   {
-    label: "create a policy to reduce people working 40+ hrs a week",
-    artifactId: "hours-policy"
-  },
-  {
-    label: "Build a T&A report that shows start and Finish Times",
+    label: "Build a T&A report that shows start and finish times",
     artifactId: "time-attendance-report"
   },
   {
-    label: "show me my turnover rate for the year",
+    label: "Show me a PDF of my benefits",
+    artifactId: "benefits-pdf"
+  },
+  {
+    label: "Show me a list of multiple links",
+    artifactId: "multiple-links"
+  },
+  {
+    label: "Show me my turnover rate for the year",
     artifactId: "turnover-rate-year"
   },
   {
-    label: "show me my under and over utilized employees",
+    label: "Show me my under and over utilized employees",
     artifactId: "employee-utilization-review"
   },
   {
@@ -407,6 +432,14 @@ function ArtifactPreview({ artifactId, variant = "compact", interactive = false,
 
   if (artifact?.tablePreview) {
     return TablePreview({ artifactId, variant, interactive, showMoreMenu, promoted });
+  }
+
+  if (artifact?.workflowPreview) {
+    return WorkflowPreview({ artifactId, variant, interactive, showMoreMenu });
+  }
+
+  if (artifact?.pdfPreview) {
+    return PdfPreview({ artifactId, variant, interactive, showMoreMenu });
   }
 
   return ReportPreview({ artifactId, variant, interactive, showMoreMenu });
@@ -516,6 +549,69 @@ function ReportPreview({ artifactId, variant = "compact", interactive = false, s
   `;
 }
 
+function WorkflowPreview({ artifactId, variant = "compact", interactive = false, showMoreMenu = true } = {}) {
+  const artifact = getArtifactById(artifactId);
+  const preview = artifact?.workflowPreview;
+  if (!preview) return "";
+
+  const actionAttrs = interactive ? `role="button" tabindex="0" data-action="view-chat-output" data-artifact-id="${artifactId}" aria-label="View ${escapeHtml(artifact.label)}"` : "";
+
+  return `
+    <div class="workflow-preview workflow-preview--${variant}" data-node-id="878:13832" ${actionAttrs}>
+      <div class="workflow-preview__header">
+        <h3>${escapeHtml(preview.title)}</h3>
+        ${interactive && showMoreMenu ? ArtifactMoreMenu({ artifactId }) : ""}
+      </div>
+      <div class="workflow-preview__body">
+        <section>
+          <h4>${escapeHtml(preview.triggerTitle)}</h4>
+          <p>${escapeHtml(preview.trigger)}</p>
+        </section>
+        <section>
+          <h4>${escapeHtml(preview.actionTitle)}</h4>
+          <p>${escapeHtml(preview.action)}</p>
+        </section>
+      </div>
+    </div>
+  `;
+}
+
+function PdfPreview({ artifactId, variant = "compact", interactive = false, showMoreMenu = true } = {}) {
+  const artifact = getArtifactById(artifactId);
+  const preview = artifact?.pdfPreview;
+  if (!preview) return "";
+
+  const actionAttrs = interactive ? `role="button" tabindex="0" data-action="view-chat-output" data-artifact-id="${artifactId}" aria-label="View ${escapeHtml(artifact.label)}"` : "";
+  const title = preview.title || artifact.label;
+  const date = preview.date || "June 4th, 2026";
+  const actionLabel = preview.actionLabel || "Open";
+
+  return `
+    <div class="pdf-preview pdf-preview--${variant}" data-node-id="4170:37856" ${actionAttrs}>
+      <div class="pdf-preview__type">
+        <span class="pdf-preview__file-icon">
+          ${pdfFileIcon(14)}
+        </span>
+      </div>
+      <div class="pdf-preview__content">
+        <h3>${escapeHtml(title)}</h3>
+        <p>${escapeHtml(date)}</p>
+      </div>
+      <div class="pdf-preview__actions">
+        <span class="pdf-preview__drive-button" aria-hidden="true">
+          ${googleDriveIcon(20)}
+        </span>
+        <span class="pdf-preview__open">${escapeHtml(actionLabel)}</span>
+        ${
+          interactive && showMoreMenu && preview.showMoreMenu
+            ? ArtifactMoreMenu({ artifactId })
+            : ""
+        }
+        </div>
+    </div>
+  `;
+}
+
 function renderTableCell(value, column) {
   if (column.type === "status") {
     const status = typeof value === "object" ? value : { label: value, tone: "neutral" };
@@ -537,6 +633,12 @@ function renderTableCell(value, column) {
     return `<span class="table-link">${escapeHtml(value)}</span>`;
   }
 
+  if (column.type === "delta") {
+    const stringValue = String(value);
+    const tone = stringValue.startsWith("+") ? "negative" : stringValue.startsWith("-") ? "positive" : "neutral";
+    return `<span class="table-delta table-delta--${tone}">${escapeHtml(stringValue)}</span>`;
+  }
+
   return escapeHtml(value);
 }
 
@@ -548,14 +650,25 @@ function TablePreview({ artifactId, variant = "compact", interactive = false, sh
   const isCompact = variant === "compact";
   const isPromoted = promoted ?? isArtifactPromoted(artifactId);
   const isTrackerStyle = table.displayStyle === "tracker";
+  const isTurnoverStyle = table.displayStyle === "turnover";
+  const showColumnChevrons = isTrackerStyle || isTurnoverStyle;
   const columns = isCompact ? table.columns.filter((column) => column.compact !== false) : table.columns;
   const rows = isCompact ? table.rows.slice(0, table.compactRows || 4) : table.rows;
-  const actionAttrs = interactive ? `role="button" tabindex="0" data-action="view-chat-output" data-artifact-id="${artifactId}" aria-label="View ${escapeHtml(artifact.label)}"` : "";
 
   return `
-    <div class="table-preview table-preview--${variant} ${isPromoted ? "table-preview--promoted" : "table-preview--widget"} ${isTrackerStyle ? "table-preview--tracker" : ""}" data-node-id="883:13314" ${actionAttrs}>
-      ${interactive && showMoreMenu ? `<div class="table-preview__more">${ArtifactMoreMenu({ artifactId })}</div>` : ""}
-      ${isTrackerStyle ? `<div class="table-preview__titlebar"><h3>${escapeHtml(table.title)}</h3></div>` : ""}
+    <div class="table-preview table-preview--${variant} ${isPromoted ? "table-preview--promoted" : "table-preview--widget"} ${isTrackerStyle ? "table-preview--tracker" : ""} ${isTurnoverStyle ? "table-preview--turnover" : ""}" data-node-id="883:13314">
+      <div class="table-preview__titlebar">
+        <h3>${escapeHtml(table.title)}</h3>
+        ${
+          interactive
+            ? `
+              <button class="table-preview__open" type="button" data-action="view-chat-output" data-artifact-id="${artifactId}">
+                Open
+              </button>
+            `
+            : ""
+        }
+      </div>
       <div class="table-preview__scroller">
         <table aria-label="${escapeHtml(table.title)}">
           <thead>
@@ -565,7 +678,7 @@ function TablePreview({ artifactId, variant = "compact", interactive = false, sh
                   (column) => `
                     <th class="table-preview__cell--${column.type || "text"}" style="width: ${column.width || "auto"}">
                       <span>${escapeHtml(column.label)}</span>
-                      ${isTrackerStyle ? svgIcon("chevronDown", 12) : ""}
+                      ${showColumnChevrons ? svgIcon("chevronDown", 12) : ""}
                     </th>
                   `
                 )
@@ -598,7 +711,7 @@ function TablePreview({ artifactId, variant = "compact", interactive = false, sh
 }
 
 function ChatOutputMetrics(metrics = []) {
-  if (!metrics.length) return "";
+  if (!metrics?.length) return "";
 
   return `
     <div class="chat-output-metrics" aria-label="Utilization summary">
@@ -627,7 +740,73 @@ function ChatOutputInsight(insight) {
   `;
 }
 
+function TurnoverAnswer(message) {
+  const narrative = message.narrative || {};
+  const paragraphs = narrative.paragraphs || [];
+
+  return `
+    <div class="turnover-answer">
+      <section class="turnover-answer__intro">
+        <div class="turnover-answer__headline">
+          <strong>${escapeHtml(narrative.metric || "14.2%")}</strong>
+          <h2>${escapeHtml(narrative.title || "Turnover is currently up by 3%")}</h2>
+        </div>
+        <div class="turnover-answer__body">
+          ${paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+        </div>
+      </section>
+      <section class="turnover-answer__recommendation">
+        <h2>${escapeHtml(narrative.recommendationTitle || "Recommended action")}</h2>
+        <p>${escapeHtml(narrative.recommendation || "Worth reviewing exit reasons for Q3 and Q4 before setting targets for next year, particularly in those two departments.")}</p>
+      </section>
+    </div>
+  `;
+}
+
+function ExternalLinksAnswer(message) {
+  const artifact = getArtifactById(message.artifactId);
+  const links = artifact?.externalLinks || [];
+
+  return `
+    <div class="chat-output-summary chat-output-summary--links">
+      <section class="chat-output-summary__block">
+        <h2>${escapeHtml(artifact?.linkListTitle || "Links")}</h2>
+        <p>${escapeHtml(artifact?.linkListSummary || message.body)}</p>
+      </section>
+      <div class="external-link-list" aria-label="Suggested links">
+        ${links
+          .map(
+            (link) => `
+              <button class="external-link-card" type="button" aria-label="Open ${escapeHtml(link.title)}">
+                <span class="external-link-card__icon" aria-hidden="true">
+                  ${link.type === "pdf" ? pdfFileIcon(14) : svgIcon("document", 14)}
+                </span>
+                <span class="external-link-card__content">
+                  <strong>${escapeHtml(link.title)}</strong>
+                  <small>${escapeHtml(link.meta)}</small>
+                </span>
+                <span class="external-link-card__source" aria-hidden="true">
+                  ${googleDriveIcon(20)}
+                </span>
+                <span class="external-link-card__open">Open</span>
+              </button>
+            `
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+}
+
 function ChatOutputSummary(message) {
+  if (message.responseLayout === "turnoverNarrative") {
+    return TurnoverAnswer(message);
+  }
+
+  if (message.responseLayout === "linkList") {
+    return ExternalLinksAnswer(message);
+  }
+
   const blocks = message.summaryBlocks || (message.summaryTitle || message.summary || message.details
     ? [
         {
@@ -695,14 +874,14 @@ function ChatThread({ mode = "sidebar" } = {}) {
     <div class="chat-thread" role="log" aria-live="polite" aria-label="Chat messages">
       ${prototypeState.chatMessages
         .map((message) => {
-          const canSaveWidget = isTableWidgetArtifact(message.artifactId);
-          const isSavedWidget = canSaveWidget && prototypeState.savedArtifactIds.includes(message.artifactId);
+          const isPdfOutput = Boolean(getArtifactById(message.artifactId)?.pdfPreview);
           const isDashboardOutput = Boolean(message.metrics?.length);
           const isEditingOutput = message.artifactId && editingArtifactId === message.artifactId;
           const outputClassName = message.role === "assistant"
             ? [
                 "chat-output",
                 message.preview ? "chat-output--has-preview" : "",
+                isPdfOutput ? "chat-output--pdf" : "",
                 isDashboardOutput ? "chat-output--dashboard" : "",
                 isEditingOutput ? "chat-output--editing" : ""
               ].filter(Boolean).join(" ")
@@ -720,37 +899,6 @@ function ChatThread({ mode = "sidebar" } = {}) {
                 ${message.role === "assistant" ? ChatOutputSummary(message) : `<p>${escapeHtml(message.body)}</p>`}
                 ${message.preview === "report" ? ArtifactPreview({ artifactId: message.artifactId, variant: previewVariant, interactive: true, showMoreMenu: !isDashboardOutput }) : ""}
                 ${message.role === "assistant" ? ChatOutputInsight(message.insight) : ""}
-                ${
-                  message.artifactId && !isEditingOutput
-                    ? `
-                      ${message.preview === "report" ? "" : `<button class="icon-button chat-output-more" type="button" aria-label="More actions" title="More actions">${svgIcon("more", 18)}</button>`}
-                      <div class="chat-output-action-row" aria-label="Output actions">
-                        <div class="chat-output-actions">
-                          <button class="chat-output-action" type="button" data-action="view-chat-output" data-artifact-id="${message.artifactId}">
-                            ${svgIcon("eye", 14)}
-                            <span>View</span>
-                          </button>
-                        </div>
-                        ${
-                          canSaveWidget
-                            ? `
-                              <button
-                                class="chat-output-action chat-output-action--save ${isSavedWidget ? "is-saved" : ""}"
-                                type="button"
-                                data-action="save-chat-output"
-                                data-artifact-id="${message.artifactId}"
-                                aria-label="${isSavedWidget ? `Saved ${escapeHtml(getArtifactById(message.artifactId).label)}` : `Save ${escapeHtml(getArtifactById(message.artifactId).label)}`}"
-                                ${isSavedWidget ? 'aria-pressed="true"' : ""}
-                              >
-                                <span>${isSavedWidget ? "Saved" : "Save"}</span>
-                              </button>
-                            `
-                            : ""
-                        }
-                      </div>
-                    `
-                    : ""
-                }
               </div>
             </article>
           `;
@@ -1262,37 +1410,134 @@ const artifactItems = [
     ]
   },
   {
+    id: "benefits-pdf",
+    label: "Benefits summary PDF",
+    eyebrow: "Benefits document",
+    icon: ArtifactTrayAssets.document,
+    tone: "berry",
+    summary: "A PDF-ready benefits summary covering current medical, dental, vision, retirement, and spending account elections.",
+    responseSummaryBlocks: [
+      {
+        title: "Benefits PDF",
+        summary: "I found your current benefits summary and prepared a PDF artifact for review."
+      }
+    ],
+    metrics: [
+      { value: "8", label: "PDF pages" },
+      { value: "5", label: "benefit categories" },
+      { value: "2026", label: "plan year" }
+    ],
+    pdfPreview: {
+      title: "Benefits summary",
+      typeLabel: "PDF",
+      date: "June 4th, 2026",
+      actionLabel: "Open",
+      description: "Current plan elections, coverage levels, payroll deductions, and key enrollment dates.",
+      meta: ["8 pages", "Updated Jun 4, 2026", "Benefits"]
+    },
+    sections: [
+      {
+        title: "Included sections",
+        body: "Medical, dental, vision, HSA/FSA, retirement contributions, beneficiaries, and enrollment contacts."
+      },
+      {
+        title: "Coverage summary",
+        body: "Shows each elected plan, coverage tier, employee cost, employer contribution, and effective date."
+      },
+      {
+        title: "Next step",
+        body: "Open the PDF artifact to review the details before sharing or downloading."
+      }
+    ]
+  },
+  {
+    id: "multiple-links",
+    label: "Multiple links",
+    eyebrow: "External links",
+    icon: ArtifactTrayAssets.document,
+    tone: "berry",
+    summary: "A grouped list of external resources returned as link cards.",
+    responseLayout: "linkList",
+    linkListTitle: "Related links",
+    linkListSummary: "Here are a few resources that may be useful.",
+    externalLinks: [
+      {
+        title: "Benefits summary",
+        meta: "PDF · Updated June 4th, 2026",
+        type: "pdf"
+      },
+      {
+        title: "Open enrollment checklist",
+        meta: "PDF · 6 pages",
+        type: "pdf"
+      },
+      {
+        title: "Medical plan comparison",
+        meta: "Document · Current plan year",
+        type: "document"
+      },
+      {
+        title: "HSA and FSA contribution guide",
+        meta: "Document · 2026 limits",
+        type: "document"
+      }
+    ],
+    sections: [
+      {
+        title: "Use case",
+        body: "Shows how a chat answer can return several external resources without treating every link as a generated artifact."
+      }
+    ]
+  },
+  {
     id: "turnover-rate-year",
-    label: "Turnover rate by quarter",
+    label: "Turnover rate, 2026",
     eyebrow: "Workforce report",
     icon: ArtifactTrayAssets.chart,
     tone: "berry",
-    summary: "A yearly turnover report showing quarterly turnover rate, exits, and average headcount so HR can spot where attrition accelerated.",
+    summary: "A yearly turnover report showing monthly turnover rate and month-over-month change so HR can spot where attrition accelerated.",
     metrics: [
-      { value: "12.4%", label: "yearly turnover rate" },
+      { value: "14.2%", label: "yearly turnover rate" },
       { value: "31", label: "employee exits" },
       { value: "250", label: "average headcount" }
     ],
-    reportPreview: {
-      title: "Turnover rate for the year",
-      yLabel: "Turnover rate",
-      xLabel: "2026",
-      ticks: [16, 12, 8, 4, 0],
-      bars: [
-        { label: "Q1", value: 9.6 },
-        { label: "Q2", value: 11.8 },
-        { label: "Q3", value: 14.2 },
-        { label: "Q4", value: 13.7 }
+    responseLayout: "turnoverNarrative",
+    responseNarrative: {
+      metric: "14.2%",
+      title: "Turnover is currently up by 3%",
+      paragraphs: [
+        "Your turnover rate for 2026 was 14.2%, up from 11.8% in 2025. Attrition climbed steadily across the year, with the sharpest acceleration between Q2 and Q3 — suggesting the increase wasn't seasonal and may reflect something structural happening mid-year.",
+        "Engineering and Operations drove most of the change. If the current trend continues into 2027, you're on pace to exceed 16% annually, which would put meaningful pressure on headcount planning and recruiting costs."
+      ],
+      recommendationTitle: "Recommended action",
+      recommendation: "Worth reviewing exit reasons for Q3 and Q4 before setting targets for next year, particularly in those two departments."
+    },
+    tablePreview: {
+      title: "Turnover rate, 2026",
+      displayStyle: "turnover",
+      compactRows: 6,
+      columns: [
+        { key: "month", label: "Month", width: "33%" },
+        { key: "rate", label: "%", type: "number", width: "33%" },
+        { key: "change", label: "Change", type: "delta", width: "34%" }
+      ],
+      rows: [
+        { month: "January", rate: "1%", change: "-1%" },
+        { month: "February", rate: "2%", change: "+1%" },
+        { month: "March", rate: "1%", change: "-1%" },
+        { month: "April", rate: "2%", change: "+1%" },
+        { month: "May", rate: "1%", change: "-1%" },
+        { month: "June", rate: "1%", change: "0%" }
       ]
     },
     sections: [
       {
         title: "Calculation",
-        body: "Annual turnover is calculated as employee exits divided by average headcount, with voluntary and involuntary exits kept in the detail view."
+        body: "Annual turnover is calculated as employee exits divided by average headcount, with monthly change shown against the prior month."
       },
       {
         title: "Trend",
-        body: "Turnover increased in the second half of the year, peaking in Q3 before easing slightly in Q4."
+        body: "Turnover increased most sharply between Q2 and Q3, with Engineering and Operations driving most of the change."
       },
       {
         title: "Recommended next step",
@@ -1340,6 +1585,77 @@ const artifactItems = [
         { employee: "Taylor Chen", department: "Clinical", utilization: { value: "62%", trend: "down" }, target: "85%", status: { label: "Under", tone: "neutral" }, action: "Review schedule availability" }
       ]
     },
+    dashboardDetail: {
+      title: "Employee Utilization - Review",
+      viewedAs: "Viewing as Nick (Owner)",
+      lastUpdated: "about 1 month ago",
+      filters: [
+        { label: "Saved filters", value: "New", icon: "document" },
+        { label: "Date range", value: "Current calendar year" }
+      ],
+      lineChart: {
+        title: "Utilization, over time",
+        yLabel: "Median utilization",
+        xLabel: "Timestamp (Year and Month)",
+        max: 120,
+        ticks: ["120%", "100%", "80%", "60%", "40%", "20%", "0"],
+        points: [
+          { label: "Jan 2026", value: 76 },
+          { label: "Feb 2026", value: 81 },
+          { label: "Mar 2026", value: 84 },
+          { label: "Apr 2026", value: 79 },
+          { label: "May 2026", value: 82 }
+        ]
+      },
+      barChart: {
+        title: "Utilization, by department",
+        yLabel: "Employee count",
+        xLabel: "Department",
+        max: 12,
+        ticks: ["12", "9", "6", "3", "0"],
+        segments: [
+          { key: "target", label: "At target", color: "#ffac1a" },
+          { key: "under", label: "Under-utilized", color: "#2f6fbd" },
+          { key: "over", label: "Over-utilized", color: "#a10f72" }
+        ],
+        bars: [
+          { label: "Clinical", values: { target: 7, under: 2, over: 2 } },
+          { label: "Admin", values: { target: 5, under: 1, over: 1 } },
+          { label: "Billing", values: { target: 4, under: 1, over: 1 } },
+          { label: "Sales", values: { target: 3, under: 2, over: 1 } },
+          { label: "Accounting", values: { target: 2, under: 1, over: 0 } }
+        ]
+      },
+      tables: [
+        {
+          title: "Employees outside target band",
+          meta: "12 rows",
+          columns: ["Employee", "Department", "Utilization", "Target", "Status", "Action"],
+          rows: [
+            ["Alex Morgan", "Clinical", "118%", "85%", "Over", "Rebalance high-acuity shifts"],
+            ["Priya Shah", "Administration", "112%", "85%", "Over", "Shift project work to open capacity"],
+            ["Nora Kim", "Billing", "107%", "85%", "Over", "Review backlog ownership"],
+            ["Miles Carter", "Marketing and Sales", "51%", "80%", "Under", "Assign campaign analysis"],
+            ["Sam Rivera", "Accounting", "58%", "80%", "Under", "Add close support tasks"],
+            ["Taylor Chen", "Clinical", "62%", "85%", "Under", "Review schedule availability"]
+          ]
+        },
+        {
+          title: "Highest utilization variance",
+          meta: "Showing 1-6 of 12",
+          columns: ["Group", "Variance", "Employees"],
+          rows: [
+            ["All", "+33 pts", "12"],
+            ["Over-utilized", "+27 pts", "5"],
+            ["Under-utilized", "-26 pts", "7"],
+            ["Clinical", "+18 pts", "4"],
+            ["Administration", "+14 pts", "2"],
+            ["Marketing and Sales", "-29 pts", "2"]
+          ],
+          pagination: ["1", "2", "3", "...", "6"]
+        }
+      ]
+    },
     sections: [
       {
         title: "Method",
@@ -1357,16 +1673,64 @@ const artifactItems = [
   },
   {
     id: "promotion-review",
-    label: "Promotion review candidates",
-    eyebrow: "Talent analysis",
+    label: "Promotion review workflow",
+    eyebrow: "Workflow",
     icon: ArtifactTrayAssets.lightning,
     tone: "berry",
-    summary: "A talent artifact identifying employees who have not had a promotion recorded in the last two years.",
+    summary: "A workflow that identifies active employees who have not had a promotion recorded in the last two years and routes them into manager calibration.",
+    responseSummaryBlocks: [
+      {
+        title: "Promotion review workflow",
+        summary: "I created a workflow to identify employees who have not been promoted in the last 2 years and route them into manager review."
+      }
+    ],
     metrics: [
       { value: "42", label: "employees identified" },
       { value: "18", label: "over 30 months since promotion" },
       { value: "6", label: "high performers to review" }
     ],
+    workflowPreview: {
+      title: "Workflow",
+      triggerTitle: "When it will run",
+      trigger: "Talent review cycle starts and active employees have no promotion recorded in the last 24 months",
+      actionTitle: "What it will do",
+      action: "Creates a promotion review list, enriches each employee with performance and compensation context, and sends manager calibration tasks for high-priority candidates.",
+      linkLabel: "View workflow"
+    },
+    workflowDetail: {
+      title: "Identify employees not promoted in last 2 years",
+      createdBy: "Terri Clark",
+      lastVersionCreatedOn: "May 27, 2026, 2:39 PM CST",
+      version: "v4",
+      nodes: [
+        {
+          icon: "sparkle",
+          title: "Workflow trigger",
+          description: "Talent review cycle starts",
+          meta: "Some filter(s) applied"
+        },
+        {
+          icon: "data",
+          title: "Query Rippling data",
+          description: "Find active employees without promotion in 24 months"
+        },
+        {
+          icon: "data",
+          title: "Query Rippling data",
+          description: "Add latest rating, level, and compa-ratio"
+        },
+        {
+          icon: "document",
+          title: "Create review artifact",
+          description: "Build promotion calibration candidate list"
+        },
+        {
+          icon: "chat",
+          title: "Notify managers",
+          description: "Send calibration tasks to managers"
+        }
+      ]
+    },
     sections: [
       {
         title: "Identification logic",
@@ -1388,13 +1752,9 @@ function getArtifactById(artifactId) {
   return artifactItems.find((item) => item.id === artifactId);
 }
 
-function isTableWidgetArtifact(artifactId) {
-  return Boolean(getArtifactById(artifactId)?.tablePreview);
-}
-
-function isAutoSavedArtifact(artifactId) {
+function isTrayArtifact(artifactId) {
   const artifact = getArtifactById(artifactId);
-  return Boolean(artifact && !artifact.tablePreview);
+  return Boolean(artifact && (artifact.reportPreview || artifact.tablePreview || artifact.workflowPreview || artifact.pdfPreview || artifact.dashboardDetail));
 }
 
 function getEditingArtifactId() {
@@ -1402,24 +1762,28 @@ function getEditingArtifactId() {
 }
 
 function isArtifactPromoted(artifactId) {
-  return Boolean(artifactId && (prototypeState.savedArtifactIds.includes(artifactId) || getEditingArtifactId() === artifactId));
+  return Boolean(artifactId && (prototypeState.artifactTrayIds.includes(artifactId) || getEditingArtifactId() === artifactId));
 }
 
-function getAutoSavedArtifactIds(artifactIds) {
-  return getValidArtifactIds(artifactIds).filter(isAutoSavedArtifact);
+function getTrayArtifactIds(artifactIds) {
+  return getValidArtifactIds(artifactIds).filter(isTrayArtifact);
 }
 
 function getCurrentArtifactItems() {
-  return prototypeState.savedArtifactIds.map(getArtifactById).filter(Boolean);
+  return prototypeState.artifactTrayIds.map(getArtifactById).filter(Boolean);
 }
 
 function ArtifactTray({ mode = "component" } = {}) {
   const items = getCurrentArtifactItems();
   const trayHeight = Math.min(88 + Math.max(items.length, 1) * 30, 360);
+  const isSidebarTray = mode === "sidebar";
   return `
     <aside class="artifact-tray artifact-tray--${mode} ${items.length > 3 ? "artifact-tray--has-many" : ""}" style="--artifact-tray-height: ${trayHeight}px" data-node-id="1682:16369" aria-label="Artifacts">
       <div class="artifact-tray__content">
-        <h2>Artifacts</h2>
+        <div class="artifact-tray__header">
+          <h2>Artifacts</h2>
+          ${isSidebarTray ? `<span class="artifact-tray__count" aria-label="${items.length} artifacts">${items.length}</span>` : ""}
+        </div>
         <div class="artifact-tray__list">
           ${
             items.length
@@ -1435,27 +1799,45 @@ function ArtifactTray({ mode = "component" } = {}) {
                     `
                   )
                   .join("")
-              : '<p class="artifact-empty">Saved artifacts will appear here.</p>'
+              : '<p class="artifact-empty">Generated artifacts will appear here.</p>'
           }
         </div>
       </div>
-      <button class="artifact-tray__pin" type="button" aria-label="Hide artifacts tray" title="Hide artifacts tray" data-action="hide-artifact-tray">
-        <img src="${ArtifactTrayAssets.pin}" alt="" />
-      </button>
+      ${
+        isSidebarTray
+          ? ""
+          : `
+            <button class="artifact-tray__close" type="button" aria-label="Close artifacts" title="Close artifacts" data-action="hide-artifact-tray">
+              ${svgIcon("close", 18)}
+            </button>
+          `
+      }
     </aside>
   `;
 }
 
-function ArtifactTakeoverPanel({ mode = "sidebar" } = {}) {
+function ArtifactTakeoverPanel({ mode = "sidebar", variant = "takeover" } = {}) {
   const items = getCurrentArtifactItems();
+  const variantClassByMode = {
+    bottomSheet: " artifact-takeover--bottom-sheet",
+    pushUp: " artifact-takeover--push-up",
+    sideCar: " artifact-takeover--side-car"
+  };
+  const variantClass = variantClassByMode[variant] || "";
+  const isPushUp = variant === "pushUp";
+  const showArtifactCount = false;
+  const toggleLabel = prototypeState.artifactTrayOpen ? "Collapse artifacts" : "Expand artifacts";
+  const headerAction = isPushUp
+    ? ""
+    : iconButton("close", "Close artifacts", "artifact-takeover__close", 'data-action="hide-artifact-tray"');
   return `
-    <aside class="artifact-takeover artifact-takeover--${mode} ${prototypeState.artifactTrayOpen ? "is-open" : "is-hidden"}" aria-label="Artifacts">
+    <aside class="artifact-takeover artifact-takeover--${mode}${variantClass} ${prototypeState.artifactTrayOpen ? "is-open" : "is-hidden"}" aria-label="Artifacts" ${isPushUp ? 'data-node-id="2014:32301"' : ""}>
       <div class="artifact-takeover__header">
-        <div>
+        <div class="artifact-takeover__title">
           <p>Artifacts</p>
-          <h2>Open artifacts</h2>
+          ${showArtifactCount ? `<span class="artifact-takeover__count" aria-label="${items.length} artifacts">${items.length}</span>` : ""}
         </div>
-        ${iconButton("close", "Close artifacts", "artifact-takeover__close", 'data-action="hide-artifact-tray"')}
+        ${headerAction}
       </div>
       <div class="artifact-takeover__list">
         ${
@@ -1464,9 +1846,15 @@ function ArtifactTakeoverPanel({ mode = "sidebar" } = {}) {
                 .map(
                   (item) => `
                     <button class="artifact-takeover-item" type="button" data-artifact-id="${item.id}">
-                      <span class="artifact-item__icon artifact-item__icon--${item.tone}">
-                        <img src="${item.icon}" alt="" />
-                      </span>
+                      ${
+                        isPushUp
+                          ? `<span class="artifact-dropdown-icon">${svgIcon("barChart", 16)}</span>`
+                          : `
+                            <span class="artifact-item__icon artifact-item__icon--${item.tone}">
+                              <img src="${item.icon}" alt="" />
+                            </span>
+                          `
+                      }
                       <span>
                         <strong>${escapeHtml(item.label)}</strong>
                         <small>${escapeHtml(item.eyebrow)}</small>
@@ -1475,7 +1863,7 @@ function ArtifactTakeoverPanel({ mode = "sidebar" } = {}) {
                   `
                 )
                 .join("")
-            : '<p class="artifact-takeover__empty">Saved artifacts will appear here.</p>'
+            : '<p class="artifact-takeover__empty">Generated artifacts will appear here.</p>'
         }
       </div>
     </aside>
@@ -1515,20 +1903,348 @@ function ArtifactTabs() {
   `;
 }
 
-function ArtifactReader() {
-  const artifact = getActiveArtifact();
-  const showHeaderClose = prototypeState.artifactMode !== "push";
-  const showFooterActions = prototypeState.artifactMode === "onTop";
+function ArtifactReaderFooter(artifact) {
+  return `
+    <div class="artifact-reader__footer" aria-label="Artifact actions">
+      <div class="artifact-reader__footer-actions">
+        <button class="artifact-reader__action" type="button" data-action="edit-artifact-modal" data-artifact-id="${artifact.id}">
+          Edit
+        </button>
+        <button class="artifact-reader__action" type="button" data-action="close-artifact">
+          Close
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function DashboardToolbarButton({ icon, label, variant = "" } = {}) {
+  return `
+    <button class="dashboard-detail__toolbar-button ${variant ? `dashboard-detail__toolbar-button--${variant}` : ""}" type="button" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">
+      ${icon ? svgIcon(icon, 16) : ""}
+      ${label === "Share" ? `<span>${escapeHtml(label)}</span>` : ""}
+    </button>
+  `;
+}
+
+function DashboardCardMenu() {
+  return `
+    <div class="dashboard-card__menu" aria-hidden="true">
+      <span>${svgIcon("sliders", 14)}</span>
+      <span class="dashboard-card__badge">1</span>
+      <span>${svgIcon("more", 14)}</span>
+    </div>
+  `;
+}
+
+function DashboardLineChart({ chart } = {}) {
+  if (!chart) return "";
+
+  const points = (chart.points || []).map((point, index, list) => {
+    const x = list.length > 1 ? (index / (list.length - 1)) * 100 : 50;
+    const y = 100 - Math.max(0, Math.min(100, (point.value / chart.max) * 100));
+    return { ...point, x, y };
+  });
+  const pointString = points.map((point) => `${point.x},${point.y}`).join(" ");
+
+  return `
+    <section class="dashboard-card dashboard-card--chart">
+      <header class="dashboard-card__header">
+        <h4>${escapeHtml(chart.title)}</h4>
+        ${DashboardCardMenu()}
+      </header>
+      <div class="dashboard-line-chart" aria-label="${escapeHtml(chart.title)} chart">
+        <div class="dashboard-chart__y-label">${escapeHtml(chart.yLabel)}</div>
+        <div class="dashboard-chart__plot">
+          <div class="dashboard-chart__ticks" aria-hidden="true">
+            ${(chart.ticks || []).map((tick) => `<span><b>${escapeHtml(tick)}</b><i></i></span>`).join("")}
+          </div>
+          <svg class="dashboard-line-chart__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polyline points="${pointString}" />
+          </svg>
+          ${points
+            .map(
+              (point) => `
+                <span class="dashboard-line-chart__point" style="--x: ${point.x}%; --y: ${point.y}%">
+                  <i>${escapeHtml(`${point.value}%`)}</i>
+                </span>
+              `
+            )
+            .join("")}
+        </div>
+        <div class="dashboard-chart__x-label">${escapeHtml(chart.xLabel)}</div>
+        <div class="dashboard-chart__axis-labels">
+          ${points.map((point) => `<span>${escapeHtml(point.label)}</span>`).join("")}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function DashboardBarChart({ chart } = {}) {
+  if (!chart) return "";
+
+  return `
+    <section class="dashboard-card dashboard-card--chart">
+      <header class="dashboard-card__header">
+        <h4>${escapeHtml(chart.title)}</h4>
+        ${DashboardCardMenu()}
+      </header>
+      <div class="dashboard-bar-chart" aria-label="${escapeHtml(chart.title)} chart">
+        <div class="dashboard-chart__y-label">${escapeHtml(chart.yLabel)}</div>
+        <div class="dashboard-chart__plot">
+          <div class="dashboard-chart__ticks" aria-hidden="true">
+            ${(chart.ticks || []).map((tick) => `<span><b>${escapeHtml(tick)}</b><i></i></span>`).join("")}
+          </div>
+          <div class="dashboard-bar-chart__bars">
+            ${(chart.bars || [])
+              .map((bar) => {
+                const total = (chart.segments || []).reduce((sum, segment) => sum + (bar.values[segment.key] || 0), 0);
+                const barHeight = Math.max(8, Math.min(100, (total / chart.max) * 100));
+                return `
+                  <span class="dashboard-bar-chart__bar-column">
+                    <span class="dashboard-bar-chart__bar" style="height: ${barHeight}%">
+                      ${(chart.segments || [])
+                        .map((segment) => {
+                          const value = bar.values[segment.key] || 0;
+                          const height = total ? (value / total) * 100 : 0;
+                          return `<i title="${escapeHtml(segment.label)}" style="height: ${height}%; background: ${segment.color}">${value ? escapeHtml(value) : ""}</i>`;
+                        })
+                        .join("")}
+                    </span>
+                    <b>${escapeHtml(bar.label)}</b>
+                  </span>
+                `;
+              })
+              .join("")}
+          </div>
+        </div>
+        <div class="dashboard-chart__x-label">${escapeHtml(chart.xLabel)}</div>
+        <div class="dashboard-chart__legend">
+          ${(chart.segments || [])
+            .map((segment) => `<span><i style="background: ${segment.color}"></i>${escapeHtml(segment.label)}</span>`)
+            .join("")}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function DashboardTableCard({ table } = {}) {
+  if (!table) return "";
+
+  return `
+    <section class="dashboard-card dashboard-card--table">
+      <header class="dashboard-card__header">
+        <h4>${escapeHtml(table.title)}</h4>
+        ${DashboardCardMenu()}
+      </header>
+      <div class="dashboard-table__meta">${escapeHtml(table.meta || "")}</div>
+      <div class="dashboard-table__scroller">
+        <table>
+          <thead>
+            <tr>
+              ${(table.columns || []).map((column) => `<th><span>${escapeHtml(column)}</span></th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            ${(table.rows || [])
+              .map(
+                (row) => `
+                  <tr>
+                    ${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}
+                  </tr>
+                `
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+      ${
+        table.pagination?.length
+          ? `
+            <div class="dashboard-table__pagination" aria-label="Table pages">
+              ${svgIcon("chevronRight", 14)}
+              ${table.pagination
+                .map((page, index) => `<span class="${index === 0 ? "is-active" : ""}">${escapeHtml(page)}</span>`)
+                .join("")}
+              ${svgIcon("chevronRight", 14)}
+            </div>
+          `
+          : ""
+      }
+    </section>
+  `;
+}
+
+function DashboardDetailView({ artifact } = {}) {
+  const detail = artifact.dashboardDetail || {};
+
+  return `
+    <div class="dashboard-detail">
+      <section class="dashboard-detail__top-card">
+        <div class="dashboard-detail__title-row">
+          <div class="dashboard-detail__title-group">
+            <h3>${escapeHtml(detail.title || artifact.label)}</h3>
+            <span class="dashboard-detail__viewer">
+              <i aria-hidden="true">N</i>
+              ${escapeHtml(detail.viewedAs || "Viewing as Owner")}
+              ${svgIcon("chevronDown", 12)}
+            </span>
+          </div>
+          <div class="dashboard-detail__toolbar">
+            <span class="dashboard-detail__updated">${svgIcon("help", 14)} ${escapeHtml(detail.lastUpdated || "about 1 month ago")}</span>
+            ${DashboardToolbarButton({ icon: "chat", label: "Comments" })}
+            ${DashboardToolbarButton({ icon: "sliders", label: "Filters", variant: "selected" })}
+            ${DashboardToolbarButton({ icon: "more", label: "More" })}
+            ${DashboardToolbarButton({ icon: "users", label: "Share", variant: "share" })}
+          </div>
+        </div>
+        <div class="dashboard-detail__filters">
+          ${(detail.filters || [])
+            .map(
+              (filter) => `
+                <div>
+                  <span>${escapeHtml(filter.label)}</span>
+                  <button type="button">
+                    ${filter.icon ? svgIcon(filter.icon, 13) : ""}
+                    ${escapeHtml(filter.value)}
+                  </button>
+                </div>
+              `
+            )
+            .join("")}
+        </div>
+      </section>
+
+      <div class="dashboard-detail__grid">
+        ${DashboardLineChart({ chart: detail.lineChart })}
+        ${DashboardBarChart({ chart: detail.barChart })}
+        ${(detail.tables || []).map((table) => DashboardTableCard({ table })).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function WorkflowDetailView({ artifact, includeClose = true } = {}) {
+  const detail = artifact.workflowDetail || {};
+  const nodes = detail.nodes || [];
+
+  return `
+    <div class="workflow-detail">
+      ${
+        includeClose
+          ? `
+            <button class="icon-button workflow-detail__close" type="button" data-action="close-artifact" aria-label="Close workflow" title="Close workflow">
+              ${svgIcon("close", 18)}
+            </button>
+          `
+          : ""
+      }
+      <div class="workflow-detail__breadcrumb" aria-label="Breadcrumb">
+        <span>Workflows</span>
+        <span aria-hidden="true">›</span>
+        <strong>${escapeHtml(detail.title || artifact.label)}</strong>
+      </div>
+
+      <section class="workflow-detail__summary-card">
+        <h3>${escapeHtml(detail.title || artifact.label)}</h3>
+        <div class="workflow-detail__meta">
+          <div>
+            <span>Last time triggered</span>
+            <strong>--</strong>
+          </div>
+          <div>
+            <span>Execution history</span>
+            <strong>--</strong>
+          </div>
+          <div>
+            <span>Created by</span>
+            <strong>${escapeHtml(detail.createdBy || "Terri Clark")}</strong>
+          </div>
+          <div>
+            <span>Last version created on</span>
+            <strong>${escapeHtml(detail.lastVersionCreatedOn || "May 27, 2026, 2:39 PM CST")}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="workflow-detail__published">
+        <h3>Last published workflow</h3>
+        <div class="workflow-canvas">
+          <span class="workflow-canvas__version">${escapeHtml(detail.version || "v4")}</span>
+          <div class="workflow-canvas__nodes">
+            ${nodes
+              .map(
+                (node, index) => `
+                  <div class="workflow-step ${index === nodes.length - 1 ? "workflow-step--last" : ""}">
+                    <div class="workflow-step__card">
+                      <span class="workflow-step__icon">${svgIcon(node.icon || "custom", 18)}</span>
+                      <span>
+                        <strong>${escapeHtml(node.title)}</strong>
+                        <small>${escapeHtml(node.description)}</small>
+                        ${node.meta ? `<em>${escapeHtml(node.meta)}</em>` : ""}
+                      </span>
+                    </div>
+                  </div>
+                `
+              )
+              .join("")}
+            <span class="workflow-canvas__end">End</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function WorkflowArtifactReader({ artifact = getActiveArtifact(), mode = prototypeState.artifactMode, showFooterActions = prototypeState.artifactMode === "onTop", includeClose = mode !== "onLeft" } = {}) {
+  if (!artifact) return "";
+
+  return `
+    <section class="artifact-reader artifact-reader--${mode} artifact-reader--workflow" aria-label="${escapeHtml(artifact.label)}">
+      <div class="artifact-reader__body artifact-reader__body--workflow">
+        ${WorkflowDetailView({ artifact, includeClose })}
+      </div>
+      ${showFooterActions ? ArtifactReaderFooter(artifact) : ""}
+    </section>
+  `;
+}
+
+function DashboardArtifactReader({ artifact = getActiveArtifact(), mode = prototypeState.artifactMode, showFooterActions = prototypeState.artifactMode === "onTop" } = {}) {
+  if (!artifact) return "";
+
+  return `
+    <section class="artifact-reader artifact-reader--${mode} artifact-reader--dashboard" aria-label="${escapeHtml(artifact.label)}">
+      <div class="artifact-reader__body artifact-reader__body--dashboard">
+        ${DashboardDetailView({ artifact })}
+      </div>
+      ${showFooterActions ? ArtifactReaderFooter(artifact) : ""}
+    </section>
+  `;
+}
+
+function ArtifactReader({ artifactId = null, mode = prototypeState.artifactMode, showFooterActions = prototypeState.artifactMode === "onTop", includeHeaderClose = prototypeState.artifactMode !== "push" } = {}) {
+  const artifact = artifactId ? getArtifactById(artifactId) : getActiveArtifact();
+  if (!artifact) return "";
+
+  if (artifact.workflowPreview) {
+    return WorkflowArtifactReader({ artifact, mode, showFooterActions });
+  }
+  if (artifact.dashboardDetail) {
+    return DashboardArtifactReader({ artifact, mode, showFooterActions });
+  }
+
   const metrics = artifact.metrics || [];
   const sections = artifact.sections || [];
   return `
-    <section class="artifact-reader artifact-reader--${prototypeState.artifactMode}" aria-label="${escapeHtml(artifact.label)}">
+    <section class="artifact-reader artifact-reader--${mode}" aria-label="${escapeHtml(artifact.label)}">
       <div class="artifact-reader__header">
         <div>
           <p class="artifact-reader__eyebrow">${escapeHtml(artifact.eyebrow)}</p>
           <h2>${escapeHtml(artifact.label)}</h2>
         </div>
-        ${showHeaderClose ? iconButton("close", "Close artifact", "artifact-reader__close", 'data-action="close-artifact"') : ""}
+        ${includeHeaderClose ? iconButton("close", "Close artifact", "artifact-reader__close", 'data-action="close-artifact"') : ""}
       </div>
       <div class="artifact-reader__body">
         <p class="artifact-reader__summary">${escapeHtml(artifact.summary)}</p>
@@ -1566,20 +2282,7 @@ function ArtifactReader() {
           .join("")}
       </div>
       ${
-        showFooterActions
-          ? `
-            <div class="artifact-reader__footer" aria-label="Artifact actions">
-              <div class="artifact-reader__footer-actions">
-                <button class="artifact-reader__action" type="button" data-action="edit-artifact-modal" data-artifact-id="${artifact.id}">
-                  Edit
-                </button>
-                <button class="artifact-reader__action" type="button" data-action="close-artifact">
-                  Close
-                </button>
-              </div>
-            </div>
-          `
-          : ""
+        showFooterActions ? ArtifactReaderFooter(artifact) : ""
       }
     </section>
   `;
@@ -1640,13 +2343,19 @@ function ArtifactEditor({ artifactId, includeClose = false } = {}) {
 
 function ArtifactSurface() {
   if (!prototypeState.activeArtifactId) return "";
-  if (prototypeState.artifactMode !== "onTop" && prototypeState.chatMode !== "fullscreen") return "";
+  const useModalSurface = shouldUseModalArtifactSurface(prototypeState.activeArtifactId);
+  if (prototypeState.artifactMode === "onLeft" && !useModalSurface) return "";
+  if (!useModalSurface && prototypeState.artifactMode !== "onTop" && prototypeState.chatMode !== "fullscreen") return "";
   const isEditing = prototypeState.artifactSurfaceMode === "edit";
 
-  if (prototypeState.artifactMode === "onTop") {
+  if (useModalSurface) {
     return `
       <div class="artifact-surface artifact-surface--modal">
-        ${ArtifactReader()}
+        ${ArtifactReader({
+          mode: "onTop",
+          showFooterActions: true,
+          includeHeaderClose: true
+        })}
       </div>
     `;
   }
@@ -1661,19 +2370,24 @@ function ArtifactSurface() {
 
 function ChatPanel({ mode = "sidebar" } = {}) {
   const isFull = mode === "fullscreen";
-  const showChatHistory = isFull && !(prototypeState.activeArtifactId && prototypeState.artifactMode !== "onTop");
-  const showChatHistoryOverlay = !isFull && !(prototypeState.activeArtifactId && prototypeState.artifactMode !== "onTop");
-  const canShowArtifactTray = !(prototypeState.activeArtifactId && prototypeState.artifactMode !== "onTop");
+  const usesSideArtifactSurface = prototypeState.activeArtifactId && prototypeState.artifactMode !== "onTop" && prototypeState.artifactMode !== "onLeft";
+  const showChatHistory = isFull && !usesSideArtifactSurface;
+  const showChatHistoryOverlay = !isFull && !usesSideArtifactSurface;
+  const canShowArtifactTray = !usesSideArtifactSurface;
   const useTakeoverTray = !isFull && prototypeState.sideTrayMode === "takeover";
+  const useBottomSheetTray = !isFull && prototypeState.sideTrayMode === "bottomSheet";
+  const usePushUpTray = !isFull && prototypeState.sideTrayMode === "pushUp";
+  const useSideCarTray = !isFull && prototypeState.sideTrayMode === "sideCar";
   const artifactTrayClass = prototypeState.artifactTrayOpen ? "is-open" : "is-hidden";
   const nodeId = isFull ? "298:43955" : "298:43951";
-  const artifactClass = isFull && prototypeState.activeArtifactId ? ` ai-panel--artifact-${prototypeState.artifactMode}` : "";
+  const artifactClass = isFull && usesSideArtifactSurface ? ` ai-panel--artifact-${prototypeState.artifactMode}` : "";
+  const sideTrayClass = !isFull ? ` ai-panel--side-tray-${prototypeState.sideTrayMode}` : "";
   const chatTitle = conversationData[prototypeState.activeConversationId]?.title || "{{Chat title}}";
   return `
     <div class="ai-panel-wrap ai-panel-wrap--${mode}" data-node-id="${nodeId}">
       ${showChatHistory ? ChatHistoryPanel({ variant: "rail" }) : ""}
       ${isFull ? "" : '<div class="ai-panel-handle-frame"><div class="ai-panel-handle"></div></div>'}
-      <section class="ai-panel ai-panel--${mode}${artifactClass}" aria-label="${isFull ? "AI chat full screen" : "AI chat sidebar"}">
+      <section class="ai-panel ai-panel--${mode}${artifactClass}${sideTrayClass}" aria-label="${isFull ? "AI chat full screen" : "AI chat sidebar"}">
         <div class="chat-panel-nav">
           <div class="chat-panel-nav__left">
             ${
@@ -1691,8 +2405,12 @@ function ChatPanel({ mode = "sidebar" } = {}) {
           <div class="chat-panel-nav__actions">
             ${canShowArtifactTray ? ChatArtifactMenu() : ""}
             ${iconButton("commentPlus", "New chat", "", 'data-action="new-chat"')}
-            ${isFull ? "" : iconButton("expand", "Expand", "", 'data-action="expand-chat"')}
-            ${iconButton("close", isFull ? "Collapse chat" : "Close", "", isFull ? 'data-action="collapse-chat"' : "")}
+            ${
+              isFull
+                ? iconButton("close", "Close full screen chat", "", 'data-action="collapse-chat"')
+                : `${iconButton("expand", "Expand", "", 'data-action="expand-chat"')}
+                   ${iconButton("close", "Close side chat", "", 'data-action="close-side-chat"')}`
+            }
           </div>
         </div>
         ${
@@ -1701,6 +2419,12 @@ function ChatPanel({ mode = "sidebar" } = {}) {
               ${
                 useTakeoverTray
                   ? ArtifactTakeoverPanel({ mode })
+                  : useBottomSheetTray
+                    ? ArtifactTakeoverPanel({ mode, variant: "bottomSheet" })
+                    : usePushUpTray
+                      ? ArtifactTakeoverPanel({ mode, variant: "pushUp" })
+                      : useSideCarTray
+                        ? ArtifactTakeoverPanel({ mode, variant: "sideCar" })
                   : `
                     <div class="artifact-dock artifact-dock--${mode} ${artifactTrayClass}">
                       ${ArtifactTray({ mode })}
@@ -1736,6 +2460,34 @@ function ChatPanel({ mode = "sidebar" } = {}) {
 }
 
 function WorkbenchPage() {
+  if (prototypeState.leftArtifactBuildState === "loading" && prototypeState.leftArtifactId) {
+    return `
+      <div class="workspace-surface workspace-surface--loading" aria-live="polite" aria-label="Building artifact">
+        <div class="workspace-loader" role="status">
+          <span class="workspace-loader__spinner" aria-hidden="true"></span>
+          <span>Building artifact</span>
+        </div>
+      </div>
+    `;
+  }
+
+  if (prototypeState.leftArtifactBuildState === "ready" && prototypeState.leftArtifactId) {
+    const artifact = getArtifactById(prototypeState.leftArtifactId);
+
+    if (artifact) {
+      return `
+        <div class="workspace-surface workspace-surface--artifact" data-left-artifact-id="${artifact.id}">
+          ${ArtifactReader({
+            artifactId: artifact.id,
+            mode: "onLeft",
+            showFooterActions: false,
+            includeHeaderClose: false
+          })}
+        </div>
+      `;
+    }
+  }
+
   const artifact = getArtifactById(prototypeState.workbenchArtifactId);
 
   if (!artifact) {
@@ -1776,28 +2528,33 @@ function SnackbarHost() {
 
 const prototypeState = {
   chatMode: "sidebar",
-  artifactMode: "onTop",
+  artifactPreset: "nearTerm",
+  artifactMode: "onLeft",
   activeArtifactId: null,
   artifactSurfaceMode: "view",
   artifactReturnMode: null,
   artifactTrayOpen: false,
+  artifactTrayUserClosed: false,
   artifactMenuOpen: false,
   activeArtifactActionMenuId: null,
-  sideTrayMode: "takeover",
+  sideTrayMode: "pushUp",
   settingsMenuOpen: false,
   chatHistoryOpen: false,
   composerDraft: "",
   chatMessages: [],
-  savedArtifactIds: [],
+  artifactTrayIds: [],
   activeConversationId: null,
   workbenchArtifactId: null,
   editingArtifactId: null,
+  leftArtifactId: null,
+  leftArtifactBuildState: "idle",
   snackbar: null,
   navExpanded: false,
   navPinState: "unpinned"
 };
 
 let snackbarTimer = null;
+let leftArtifactBuildTimer = null;
 
 const chatLayoutMotion = {
   duration: 200,
@@ -1817,45 +2574,90 @@ function App() {
 }
 
 function AppLayout() {
+  const isChatClosed = prototypeState.chatMode === "closed";
+  const sideTrayClass = prototypeState.chatMode === "sidebar" ? ` chat-demo--side-tray-${prototypeState.sideTrayMode}` : "";
+  const sideCarOpenClass = prototypeState.chatMode === "sidebar" && prototypeState.sideTrayMode === "sideCar" && prototypeState.artifactTrayOpen
+    ? " chat-demo--sidecar-open"
+    : "";
   return `
     ${SideNav()}
     ${Workbench()}
-    <aside class="chat-demo chat-demo--${prototypeState.chatMode}">
-      ${ChatPanel({ mode: prototypeState.chatMode })}
-    </aside>
+    ${
+      isChatClosed
+        ? ""
+        : `<aside class="chat-demo chat-demo--${prototypeState.chatMode}${sideTrayClass}${sideCarOpenClass}">
+            ${ChatPanel({ mode: prototypeState.chatMode })}
+          </aside>`
+    }
     ${ArtifactSurface()}
   `;
 }
 
+function clearLeftArtifactBuildState() {
+  if (leftArtifactBuildTimer) {
+    window.clearTimeout(leftArtifactBuildTimer);
+    leftArtifactBuildTimer = null;
+  }
+
+  prototypeState.leftArtifactId = null;
+  prototypeState.leftArtifactBuildState = "idle";
+}
+
 function bindTopNavInteractions() {
+  document.querySelector('[data-action="open-side-chat"]')?.addEventListener("click", () => {
+    if (prototypeState.chatMode === "closed") {
+      transitionChatMode("sidebar");
+      return;
+    }
+
+    if (prototypeState.chatMode === "fullscreen") {
+      transitionChatMode("sidebar");
+    }
+  });
+
   document.querySelector('[data-action="toggle-settings-menu"]')?.addEventListener("click", () => {
     prototypeState.settingsMenuOpen = !prototypeState.settingsMenuOpen;
     renderApp();
   });
 
-  document.querySelectorAll("[data-artifact-mode]").forEach((button) => {
+  document.querySelectorAll("[data-artifact-preset]").forEach((button) => {
     button.addEventListener("click", () => {
-      prototypeState.artifactMode = button.dataset.artifactMode;
-      prototypeState.settingsMenuOpen = false;
-
-      if (prototypeState.activeArtifactId && prototypeState.chatMode !== "fullscreen" && prototypeState.artifactMode !== "onTop") {
-        prototypeState.artifactReturnMode = "sidebar";
-        transitionChatMode("fullscreen");
-        return;
-      }
-
-      renderApp();
+      applyArtifactPreset(button.dataset.artifactPreset);
     });
   });
+}
 
-  document.querySelectorAll("[data-side-tray-mode]").forEach((button) => {
-    button.addEventListener("click", () => {
-      prototypeState.sideTrayMode = button.dataset.sideTrayMode;
-      prototypeState.artifactTrayOpen = false;
-      prototypeState.settingsMenuOpen = false;
-      renderApp();
-    });
-  });
+function applyArtifactPreset(presetId) {
+  const preset = artifactSettingPresets.find((item) => item.id === presetId);
+  if (!preset) return;
+
+  const activeArtifactId = prototypeState.activeArtifactId || prototypeState.leftArtifactId;
+  prototypeState.artifactPreset = preset.id;
+  prototypeState.artifactMode = preset.artifactMode;
+  prototypeState.sideTrayMode = preset.sideTrayMode;
+  prototypeState.artifactTrayOpen = false;
+  prototypeState.settingsMenuOpen = false;
+  prototypeState.artifactMenuOpen = false;
+  prototypeState.activeArtifactActionMenuId = null;
+
+  if (preset.artifactMode === "onLeft") {
+    if (activeArtifactId) {
+      openArtifact(activeArtifactId);
+      return;
+    }
+
+    renderApp();
+    return;
+  }
+
+  clearLeftArtifactBuildState();
+
+  if (activeArtifactId) {
+    openArtifact(activeArtifactId);
+    return;
+  }
+
+  renderApp();
 }
 
 function setNavExpanded(isExpanded) {
@@ -1881,8 +2683,39 @@ function toggleNavPin() {
   renderAppLayout();
 }
 
+function shouldUseModalArtifactSurface(artifactId) {
+  return prototypeState.artifactMode === "onTop" || (prototypeState.artifactMode === "onLeft" && artifactId === "benefits-pdf");
+}
+
+function openArtifactModal(artifactId) {
+  clearLeftArtifactBuildState();
+
+  const originMode = prototypeState.chatMode;
+  prototypeState.activeArtifactId = artifactId;
+  prototypeState.artifactSurfaceMode = "view";
+  prototypeState.artifactReturnMode = originMode;
+  prototypeState.artifactTrayOpen = false;
+  prototypeState.artifactMenuOpen = false;
+  prototypeState.activeArtifactActionMenuId = null;
+  prototypeState.editingArtifactId = null;
+
+  renderArtifactSurfaceOnly();
+}
+
 function openArtifact(artifactId) {
   if (!getArtifactById(artifactId)) return;
+
+  if (shouldUseModalArtifactSurface(artifactId)) {
+    openArtifactModal(artifactId);
+    return;
+  }
+
+  if (prototypeState.artifactMode === "onLeft") {
+    openArtifactOnLeft(artifactId);
+    return;
+  }
+
+  clearLeftArtifactBuildState();
 
   const originMode = prototypeState.chatMode;
   prototypeState.activeArtifactId = artifactId;
@@ -1906,6 +2739,41 @@ function openArtifact(artifactId) {
   renderAppLayout();
 }
 
+function openArtifactOnLeft(artifactId) {
+  if (!getArtifactById(artifactId)) return;
+
+  clearLeftArtifactBuildState();
+
+  const shouldReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  prototypeState.leftArtifactId = artifactId;
+  prototypeState.leftArtifactBuildState = shouldReduceMotion ? "ready" : "loading";
+  prototypeState.activeArtifactId = null;
+  prototypeState.artifactSurfaceMode = "view";
+  prototypeState.artifactReturnMode = null;
+  prototypeState.artifactTrayOpen = false;
+  prototypeState.artifactMenuOpen = false;
+  prototypeState.activeArtifactActionMenuId = null;
+  prototypeState.chatHistoryOpen = false;
+  prototypeState.workbenchArtifactId = null;
+  prototypeState.editingArtifactId = null;
+
+  if (prototypeState.chatMode !== "sidebar") {
+    transitionChatMode("sidebar");
+  } else {
+    renderAppLayout();
+  }
+
+  if (shouldReduceMotion) return;
+
+  leftArtifactBuildTimer = window.setTimeout(() => {
+    if (prototypeState.leftArtifactId !== artifactId || prototypeState.leftArtifactBuildState !== "loading") return;
+
+    prototypeState.leftArtifactBuildState = "ready";
+    leftArtifactBuildTimer = null;
+    renderWorkbenchOnly();
+  }, 680);
+}
+
 function resolveArtifactFromText(text) {
   const normalized = text.toLowerCase();
   const exactPrompt = promptItems.find((prompt) => prompt.label.toLowerCase() === normalized);
@@ -1913,6 +2781,8 @@ function resolveArtifactFromText(text) {
   if (exactPrompt) return exactPrompt.artifactId;
   if (normalized.includes("40") || normalized.includes("overtime") || (normalized.includes("policy") && normalized.includes("hour"))) return "hours-policy";
   if (normalized.includes("t&a") || normalized.includes("time and attendance") || (normalized.includes("start") && normalized.includes("finish"))) return "time-attendance-report";
+  if ((normalized.includes("benefits") || normalized.includes("benefit")) && normalized.includes("pdf")) return "benefits-pdf";
+  if (normalized.includes("links") && (normalized.includes("multiple") || normalized.includes("list"))) return "multiple-links";
   if (normalized.includes("turnover") || normalized.includes("attrition")) return "turnover-rate-year";
   if (normalized.includes("utilized") || normalized.includes("utilization") || (normalized.includes("under") && normalized.includes("over"))) return "employee-utilization-review";
   if (normalized.includes("promot")) return "promotion-review";
@@ -1926,25 +2796,29 @@ function buildAssistantMessage(artifactId) {
   if (!artifact) {
     return {
       role: "assistant",
-      body: "I can help with that. Try one of the suggested prompts or ask for a policy, T&A report, or promotion review and I will create the matching artifact."
+      body: "I can help with that. Try one of the suggested prompts or ask for a policy, T&A report, benefits PDF, or promotion review and I will create the matching artifact."
     };
   }
 
   const responseByArtifactId = {
     "hours-policy": "I drafted a 40+ hour reduction policy with manager review thresholds, exception handling, and follow-up guidance. Use View to open the artifact or Edit to work on it in the canvas.",
     "time-attendance-report": "I built a T&A report outline with start times, finish times, actual hours, and exception fields. Use View to open the artifact or Edit to work on it in the canvas.",
+    "benefits-pdf": "I found your current benefits summary and prepared a PDF artifact for review.",
+    "multiple-links": "I found several related resources and grouped them into a link list.",
     "turnover-rate-year": "I calculated your turnover rate for the year and broke it out by quarter so you can see where attrition accelerated.",
     "employee-utilization-review": "I identified under and over utilized employees based on scheduled capacity versus assigned work, with recommended next actions for each group.",
-    "promotion-review": "I identified employees who have not had a promotion recorded in the last two years and included review columns for manager calibration. Use View to open the artifact or Edit to work on it in the canvas."
+    "promotion-review": "I created a promotion review workflow that finds employees who have not had a promotion recorded in the last 2 years and routes them into manager calibration. Use View to open the workflow."
   };
 
   return {
     role: "assistant",
     body: responseByArtifactId[artifactId] || `I created ${artifact.label} and opened it for review.`,
     summaryBlocks: artifact.responseSummaryBlocks || null,
+    responseLayout: artifact.responseLayout || null,
+    narrative: artifact.responseNarrative || null,
     artifactId,
     actionLabel: `Open ${artifact.label}`,
-    preview: artifact.reportPreview || artifact.tablePreview ? "report" : null,
+    preview: artifact.reportPreview || artifact.tablePreview || artifact.workflowPreview || artifact.pdfPreview ? "report" : null,
     metrics: artifact.responseMetrics || null,
     insight: artifact.responseInsight || null
   };
@@ -1955,29 +2829,36 @@ function getValidArtifactIds(artifactIds) {
 }
 
 function addArtifactsToTray(artifactIds) {
-  const nextArtifactIds = [...prototypeState.savedArtifactIds];
+  const nextArtifactIds = [...prototypeState.artifactTrayIds];
+  let addedArtifact = false;
 
   getValidArtifactIds(artifactIds).forEach((artifactId) => {
     if (!nextArtifactIds.includes(artifactId)) {
       nextArtifactIds.push(artifactId);
+      addedArtifact = true;
     }
   });
 
-  prototypeState.savedArtifactIds = nextArtifactIds;
-}
+  prototypeState.artifactTrayIds = nextArtifactIds;
 
-function saveTableWidgetToTray(artifactId) {
-  if (!isTableWidgetArtifact(artifactId)) return;
-
-  addArtifactsToTray([artifactId]);
-  revealArtifactTray();
+  if (addedArtifact && !prototypeState.artifactTrayUserClosed) {
+    prototypeState.artifactTrayOpen = true;
+  }
 }
 
 function revealArtifactTray() {
-  prototypeState.artifactTrayOpen = false;
   prototypeState.artifactMenuOpen = false;
   prototypeState.activeArtifactActionMenuId = null;
   prototypeState.chatHistoryOpen = false;
+  prototypeState.artifactTrayUserClosed = false;
+
+  if (prototypeState.sideTrayMode === "pushUp") {
+    prototypeState.artifactTrayOpen = true;
+    renderAppLayout();
+    return;
+  }
+
+  prototypeState.artifactTrayOpen = false;
   renderAppLayout();
   window.requestAnimationFrame(() => setArtifactTrayOpen(true));
 }
@@ -1996,8 +2877,9 @@ function loadConversation(conversationId) {
   prototypeState.activeArtifactId = null;
   prototypeState.artifactSurfaceMode = "view";
   prototypeState.artifactReturnMode = null;
-  prototypeState.savedArtifactIds = getAutoSavedArtifactIds(conversation.artifactIds || conversation.messages.map((message) => message.artifactId).filter(Boolean));
-  prototypeState.artifactTrayOpen = prototypeState.savedArtifactIds.length > 0;
+  clearLeftArtifactBuildState();
+  prototypeState.artifactTrayIds = getTrayArtifactIds(conversation.artifactIds || conversation.messages.map((message) => message.artifactId).filter(Boolean));
+  prototypeState.artifactTrayOpen = prototypeState.artifactTrayIds.length > 0 && !prototypeState.artifactTrayUserClosed;
   prototypeState.artifactMenuOpen = false;
   prototypeState.activeArtifactActionMenuId = null;
   prototypeState.chatHistoryOpen = false;
@@ -2024,8 +2906,8 @@ function sendChatMessage(text, preferredArtifactId = null) {
   prototypeState.activeArtifactId = null;
   prototypeState.artifactSurfaceMode = "view";
   prototypeState.artifactReturnMode = null;
-  addArtifactsToTray(artifact && isAutoSavedArtifact(artifact.id) ? [artifact.id] : []);
-  prototypeState.artifactTrayOpen = false;
+  clearLeftArtifactBuildState();
+  addArtifactsToTray(artifact && isTrayArtifact(artifact.id) ? [artifact.id] : []);
   prototypeState.artifactMenuOpen = false;
   prototypeState.activeArtifactActionMenuId = null;
   prototypeState.editingArtifactId = null;
@@ -2033,13 +2915,26 @@ function sendChatMessage(text, preferredArtifactId = null) {
   renderAppLayout();
 }
 
+function handlePromptClick(artifactId) {
+  const prompt = promptItems.find((item) => item.artifactId === artifactId);
+  sendChatMessage(prompt?.label || "", artifactId);
+}
+
+window.handlePromptClick = handlePromptClick;
+
+function runPromptButton(button) {
+  const artifactId = button.dataset.promptArtifactId;
+  const prompt = promptItems.find((item) => item.artifactId === artifactId);
+  sendChatMessage(prompt?.label || button.textContent, artifactId);
+}
+
 function editArtifactInWorkbench(artifactId) {
   if (!getArtifactById(artifactId)) return;
+  clearLeftArtifactBuildState();
   prototypeState.editingArtifactId = artifactId;
   addArtifactsToTray([artifactId]);
 
   if (prototypeState.chatMode === "fullscreen") {
-    prototypeState.artifactTrayOpen = false;
     prototypeState.chatHistoryOpen = false;
 
     if (prototypeState.artifactMode === "onTop") {
@@ -2132,6 +3027,32 @@ function getArtifactClipboardText(artifactId) {
     });
   }
 
+  if (artifact.pdfPreview) {
+    lines.push("", artifact.pdfPreview.title || "PDF");
+    lines.push(artifact.pdfPreview.description || "");
+    if (artifact.pdfPreview.meta?.length) {
+      lines.push(artifact.pdfPreview.meta.join(" · "));
+    }
+  }
+
+  if (artifact.workflowDetail) {
+    lines.push("", artifact.workflowDetail.title || "Workflow");
+    artifact.workflowDetail.nodes?.forEach((node) => {
+      lines.push(`${node.title}: ${node.description}`);
+    });
+  }
+
+  if (artifact.dashboardDetail) {
+    lines.push("", artifact.dashboardDetail.title || "Dashboard");
+    artifact.dashboardDetail.tables?.forEach((table) => {
+      lines.push("", table.title);
+      lines.push(table.columns.join("\t"));
+      table.rows.forEach((row) => {
+        lines.push(row.join("\t"));
+      });
+    });
+  }
+
   return lines.filter(Boolean).join("\n");
 }
 
@@ -2173,6 +3094,17 @@ function dismissSnackbar() {
 }
 
 function bindLayoutInteractions() {
+  document.querySelector(".chat-demo")?.addEventListener(
+    "pointerup",
+    (event) => {
+      const button = event.target.closest?.("[data-prompt-artifact-id]");
+      if (!button) return;
+      event.preventDefault();
+      runPromptButton(button);
+    },
+    { capture: true }
+  );
+
   document.querySelector('[data-action="nav-hover-zone"]')?.addEventListener("mouseenter", () => {
     setNavExpanded(true);
   });
@@ -2207,13 +3139,6 @@ function bindLayoutInteractions() {
       if (event.key !== "Enter" && event.key !== " ") return;
       event.preventDefault();
       runChatOutputAction(button, "view");
-    });
-  });
-
-  document.querySelectorAll('[data-action="save-chat-output"]').forEach((button) => {
-    button.addEventListener("click", (event) => {
-      event.stopPropagation();
-      saveTableWidgetToTray(button.dataset.artifactId);
     });
   });
 
@@ -2269,9 +3194,15 @@ function bindLayoutInteractions() {
   });
 
   document.querySelectorAll("[data-prompt-artifact-id]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const prompt = promptItems.find((item) => item.artifactId === button.dataset.promptArtifactId);
-      sendChatMessage(prompt?.label || button.textContent, button.dataset.promptArtifactId);
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      runPromptButton(button);
+    });
+
+    button.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      runPromptButton(button);
     });
   });
 
@@ -2303,20 +3234,15 @@ function bindLayoutInteractions() {
       prototypeState.activeArtifactId = null;
       prototypeState.artifactSurfaceMode = "view";
       prototypeState.artifactReturnMode = null;
-      prototypeState.savedArtifactIds = [];
+      prototypeState.artifactTrayIds = [];
       prototypeState.artifactTrayOpen = false;
+      prototypeState.artifactTrayUserClosed = false;
       prototypeState.artifactMenuOpen = false;
       prototypeState.activeArtifactActionMenuId = null;
       prototypeState.chatHistoryOpen = false;
       prototypeState.workbenchArtifactId = null;
       prototypeState.editingArtifactId = null;
-      renderAppLayout();
-    });
-  });
-
-  document.querySelectorAll('[data-action="toggle-artifact-menu"]').forEach((button) => {
-    button.addEventListener("click", () => {
-      prototypeState.artifactMenuOpen = !prototypeState.artifactMenuOpen;
+      clearLeftArtifactBuildState();
       renderAppLayout();
     });
   });
@@ -2336,18 +3262,18 @@ function bindLayoutInteractions() {
 
   document.querySelectorAll('[data-action="toggle-artifact-tray"]').forEach((button) => {
     button.addEventListener("click", () => {
-      setArtifactTrayOpen(!prototypeState.artifactTrayOpen);
+      setArtifactTrayOpen(!prototypeState.artifactTrayOpen, { userInitiated: true });
     });
   });
 
   document.querySelectorAll('[data-action="hide-artifact-tray"]').forEach((button) => {
     button.addEventListener("click", () => {
-      setArtifactTrayOpen(false);
+      setArtifactTrayOpen(false, { userInitiated: true });
     });
   });
 
   document.querySelector('[data-action="peek-artifact-tray"]')?.addEventListener("mouseenter", () => {
-    setArtifactTrayOpen(true);
+    setArtifactTrayOpen(true, { userInitiated: true });
   });
 
   document.querySelector('[data-action="toggle-chat-history"]')?.addEventListener("click", () => {
@@ -2373,11 +3299,25 @@ function bindLayoutInteractions() {
     transitionChatMode("fullscreen");
   });
 
+  document.querySelector('[data-action="close-side-chat"]')?.addEventListener("click", () => {
+    prototypeState.activeArtifactId = null;
+    prototypeState.artifactSurfaceMode = "view";
+    prototypeState.artifactReturnMode = null;
+    prototypeState.artifactTrayOpen = false;
+    prototypeState.artifactMenuOpen = false;
+    prototypeState.activeArtifactActionMenuId = null;
+    prototypeState.chatHistoryOpen = false;
+    transitionChatMode("closed");
+  });
+
   document.querySelector('[data-action="collapse-chat"]')?.addEventListener("click", () => {
     prototypeState.activeArtifactId = null;
     prototypeState.artifactSurfaceMode = "view";
     prototypeState.artifactReturnMode = null;
     prototypeState.chatHistoryOpen = false;
+    if (prototypeState.artifactMode !== "onLeft") {
+      clearLeftArtifactBuildState();
+    }
     transitionChatMode("sidebar");
   });
 
@@ -2413,23 +3353,38 @@ function bindSnackbarInteractions() {
   });
 }
 
-function setArtifactTrayOpen(isOpen) {
+function setArtifactTrayOpen(isOpen, { userInitiated = false } = {}) {
   prototypeState.artifactTrayOpen = isOpen;
   prototypeState.artifactMenuOpen = false;
   prototypeState.activeArtifactActionMenuId = null;
 
+  if (userInitiated) {
+    prototypeState.artifactTrayUserClosed = !isOpen;
+  }
+
+  const chatDemo = document.querySelector(".chat-demo");
   const dock = document.querySelector(".artifact-dock");
   const takeover = document.querySelector(".artifact-takeover");
-  const trigger = document.querySelector('[data-action="toggle-artifact-menu"]');
+  const trigger = document.querySelector('.chat-artifact-menu [data-action="toggle-artifact-tray"]');
   const peekZone = document.querySelector('[data-action="peek-artifact-tray"]');
+  const pushUpToggle = document.querySelector('.artifact-takeover--push-up [data-action="toggle-artifact-tray"]');
+  const shouldExpandSideCar = isOpen && prototypeState.chatMode === "sidebar" && prototypeState.sideTrayMode === "sideCar";
+  const pushUpToggleLabel = isOpen ? "Collapse artifacts" : "Expand artifacts";
 
+  chatDemo?.classList.toggle("chat-demo--sidecar-open", shouldExpandSideCar);
   dock?.classList.toggle("is-open", isOpen);
   dock?.classList.toggle("is-hidden", !isOpen);
   takeover?.classList.toggle("is-open", isOpen);
   takeover?.classList.toggle("is-hidden", !isOpen);
   trigger?.classList.toggle("is-active", isOpen);
-  trigger?.setAttribute("aria-expanded", "false");
+  trigger?.setAttribute("aria-expanded", `${isOpen}`);
   peekZone?.classList.toggle("is-visible", !isOpen);
+  if (pushUpToggle) {
+    pushUpToggle.setAttribute("aria-label", pushUpToggleLabel);
+    pushUpToggle.setAttribute("title", pushUpToggleLabel);
+    pushUpToggle.setAttribute("aria-expanded", `${isOpen}`);
+    pushUpToggle.innerHTML = svgIcon(isOpen ? "chevronUp" : "chevronDown");
+  }
 }
 
 function setChatHistoryOpen(isOpen) {
@@ -2485,8 +3440,8 @@ function closeArtifactWithTransition() {
   const panel = document.querySelector(".ai-panel");
   const shouldReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const returnMode = prototypeState.artifactReturnMode || prototypeState.chatMode;
-  const isOnTop = prototypeState.artifactMode === "onTop";
-  const closeDuration = prototypeState.artifactMode === "onTop" ? 200 : 360;
+  const isModalSurface = shouldUseModalArtifactSurface(prototypeState.activeArtifactId);
+  const closeDuration = isModalSurface ? 200 : 360;
 
   if (!surface || shouldReduceMotion) {
     prototypeState.activeArtifactId = null;
@@ -2499,7 +3454,7 @@ function closeArtifactWithTransition() {
       return;
     }
 
-    if (isOnTop) {
+    if (isModalSurface) {
       surface?.remove();
     } else {
       renderAppLayout();
@@ -2509,7 +3464,7 @@ function closeArtifactWithTransition() {
 
   surface.classList.add("artifact-surface--closing");
 
-  if (!isOnTop) {
+  if (!isModalSurface) {
     panel?.classList.add("ai-panel--artifact-closing");
   }
 
@@ -2524,7 +3479,7 @@ function closeArtifactWithTransition() {
       return;
     }
 
-    if (isOnTop) {
+    if (isModalSurface) {
       surface.remove();
     } else {
       renderAppLayout();
@@ -2539,7 +3494,7 @@ function transitionChatMode(nextMode) {
   const sourceRect = sourcePanel?.getBoundingClientRect();
   const shouldReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  if (nextMode === "fullscreen" && !prototypeState.activeArtifactId && getCurrentArtifactItems().length) {
+  if (nextMode === "fullscreen" && !prototypeState.activeArtifactId && !prototypeState.artifactTrayUserClosed) {
     prototypeState.artifactTrayOpen = true;
   }
 
@@ -2601,6 +3556,7 @@ function renderApp() {
   document.getElementById("app").innerHTML = App();
   bindInteractions();
   syncChatViewport();
+  positionSnackbarHost();
 }
 
 function renderAppLayout() {
@@ -2614,6 +3570,7 @@ function renderAppLayout() {
   layout.innerHTML = AppLayout();
   bindLayoutInteractions();
   syncChatViewport();
+  positionSnackbarHost();
 }
 
 function renderSnackbarOnly() {
@@ -2625,6 +3582,19 @@ function renderSnackbarOnly() {
 
   root.innerHTML = SnackbarHost();
   bindSnackbarInteractions();
+  positionSnackbarHost();
+}
+
+function positionSnackbarHost() {
+  const host = document.querySelector(".snackbar-host");
+  const composer = document.querySelector(".ai-composer--compact") || document.querySelector(".ai-composer");
+  if (!host || !composer) return;
+
+  const rect = composer.getBoundingClientRect();
+  host.style.setProperty("--snackbar-left", `${Math.round(rect.left)}px`);
+  host.style.setProperty("--snackbar-width", `${Math.round(rect.width)}px`);
+  host.style.setProperty("--snackbar-bottom", `${Math.round(Math.max(16, window.innerHeight - rect.top + 10))}px`);
+  host.style.setProperty("--snackbar-x-offset", "0");
 }
 
 function renderWorkbenchOnly() {
@@ -2637,4 +3607,26 @@ function renderWorkbenchOnly() {
   workbench.innerHTML = WorkbenchPage();
 }
 
+function initializeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const shouldRunPrompt = params.get("runPrompt") === "true";
+  const promptId = params.get("prompt");
+  if (!shouldRunPrompt) return;
+  if (!promptId || prototypeState.chatMessages.length) return;
+
+  const prompt = promptItems.find((item) => item.artifactId === promptId);
+  if (!prompt) return;
+
+  const artifact = getArtifactById(prompt.artifactId);
+  prototypeState.chatMessages = [
+    { role: "user", body: prompt.label },
+    buildAssistantMessage(prompt.artifactId)
+  ];
+  prototypeState.artifactTrayIds = getTrayArtifactIds(artifact ? [artifact.id] : []);
+  prototypeState.artifactTrayOpen = prototypeState.artifactTrayIds.length > 0 && !prototypeState.artifactTrayUserClosed;
+  prototypeState.activeConversationId = null;
+}
+
+initializeFromUrl();
 renderApp();
+window.addEventListener("resize", positionSnackbarHost);
