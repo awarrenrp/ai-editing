@@ -57,8 +57,32 @@ const ArtifactTrayAssets = {
   pin: "assets/artifact-pin.svg"
 };
 
+const ArtifactTrayFigmaIcon = {
+  chart: {
+    viewBox: "0 0 9.75 9.75",
+    body: '<path d="M9.75 0H7V9.75H9.75V0Z"/><path d="M6.25 2.5H3.5V9.75H6.25V2.5Z"/><path d="M2.75 4.5H0V9.75H2.75V4.5Z"/>'
+  },
+  lightning: {
+    viewBox: "0 0 8.7775 11.679",
+    body: '<path d="M4.966 4.4645L5.575 0L0 7.2145H3.8115L3.2025 11.679L8.7775 4.4645H4.966Z"/>'
+  },
+  document: {
+    viewBox: "0 0 7.75 10.25",
+    body: '<path d="M0 0H5.2805L7.75 2.4695V10.25H0V0ZM5.125 0.9055V2.625H6.8445L5.125 0.9055ZM1.875 5H5.875V4.25H1.875V5ZM5.875 6.75V6H1.875V6.75H5.875ZM1.875 8.5H5.875V7.75H1.875V8.5Z"/>'
+  }
+};
+
 function svgIcon(name, size = 20) {
   return `<svg class="icon" style="--icon-size: ${size}px;" width="${size}" height="${size}" viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${Icon[name]}</svg>`;
+}
+
+function promptArrowIcon(size = 14) {
+  return `<svg class="prompt-arrow-icon" style="--icon-size: ${size}px;" width="${size}" height="${size}" viewBox="0 0 14 14" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" fill="none"><path d="M0.875 4.95833V0H0V4.95833C0 7.133 1.76283 8.89583 3.9375 8.89583H8.71442L6.54442 11.0658L7.16333 11.6847L10.3892 8.45892L7.16333 5.23308L6.54442 5.852L8.71442 8.022H3.9375C2.24642 8.022 0.875 6.65058 0.875 4.9595V4.95833Z" transform="translate(1.8956 1.1662)" fill="currentColor"/></svg>`;
+}
+
+function figmaArtifactIcon(name, size = 16) {
+  const icon = ArtifactTrayFigmaIcon[name] || ArtifactTrayFigmaIcon.chart;
+  return `<svg class="icon artifact-figma-icon" style="--icon-size: ${size}px;" width="${size}" height="${size}" viewBox="${icon.viewBox}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" fill="currentColor">${icon.body}</svg>`;
 }
 
 function pdfFileIcon(size = 14) {
@@ -425,7 +449,7 @@ const promptItems = [
 function PromptChip({ label, artifactId }) {
   return `
     <button class="prompt-chip" type="button" data-prompt-artifact-id="${artifactId}" aria-label="Run prompt: ${escapeHtml(label)}">
-      ${svgIcon("arrowDownRight", 14)}
+      ${promptArrowIcon(14)}
       <span>${escapeHtml(label)}</span>
     </button>
   `;
@@ -447,6 +471,11 @@ function ArtifactPreview({ artifactId, variant = "compact", interactive = false,
   }
 
   return ReportPreview({ artifactId, variant, interactive, showMoreMenu });
+}
+
+function isWideReportArtifact(artifactId) {
+  const artifact = getArtifactById(artifactId);
+  return Boolean(artifact?.tablePreview);
 }
 
 const artifactMoreActions = [
@@ -516,12 +545,17 @@ function ReportPreview({ artifactId, variant = "compact", interactive = false, s
 
   const maxTick = Math.max(...preview.ticks);
   const showExportAction = interactive && preview.showExportAction !== false;
-  const showOpenAction = interactive && preview.showOpenAction !== false;
-  const exportLabel = preview.exportActionLabel || "Export";
-  const openLabel = preview.openActionLabel || "Open";
+  const exportLabel = preview.exportActionLabel || "Export CSV";
+  const reportClassName = [
+    "report-preview",
+    `report-preview--${variant}`,
+    artifactId === "time-attendance-report" ? "report-preview--time-attendance" : ""
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return `
-    <div class="report-preview report-preview--${variant}">
+    <div class="${reportClassName}">
       <div class="report-preview__header">
         <h3>${escapeHtml(preview.title)}</h3>
         ${
@@ -533,15 +567,7 @@ function ReportPreview({ artifactId, variant = "compact", interactive = false, s
                     ? `
                       <button class="report-preview__export" type="button" data-action="artifact-menu-command" data-menu-command="download" data-artifact-id="${artifactId}" aria-label="${escapeHtml(exportLabel)}" title="${escapeHtml(exportLabel)}">
                         ${svgIcon("download", 16)}
-                      </button>
-                    `
-                    : ""
-                }
-                ${
-                  showOpenAction
-                    ? `
-                      <button class="report-preview__open" type="button" data-action="view-chat-output" data-artifact-id="${artifactId}">
-                        ${escapeHtml(openLabel)}
+                        <span>${escapeHtml(exportLabel)}</span>
                       </button>
                     `
                     : ""
@@ -643,7 +669,7 @@ function PdfPreview({ artifactId, variant = "compact", interactive = false, show
   const preview = artifact?.pdfPreview;
   if (!preview) return "";
 
-  const actionAttrs = interactive ? `role="button" tabindex="0" data-action="view-chat-output" data-artifact-id="${artifactId}" aria-label="View ${escapeHtml(artifact.label)}"` : "";
+  const actionAttrs = interactive ? `role="button" tabindex="0" data-action="open-external-artifact" data-artifact-id="${artifactId}" aria-label="Open ${escapeHtml(artifact.label)} in a new tab"` : "";
   const title = preview.title || artifact.label;
   const date = preview.date || "June 4th, 2026";
   const actionLabel = preview.actionLabel || "Open";
@@ -719,10 +745,7 @@ function TablePreview({ artifactId, variant = "compact", interactive = false, sh
   const columns = isCompact ? table.columns.filter((column) => column.compact !== false) : table.columns;
   const rows = isCompact ? table.rows.slice(0, table.compactRows || 4) : table.rows;
   const showExportAction = interactive && table.showExportAction !== false;
-  const showOpenAction = interactive && table.showOpenAction !== false;
-  const exportActionLabel = table.exportActionLabel || "Export";
-  const openAction = table.openAction === "mainCanvas" ? "open-main-canvas-artifact" : "view-chat-output";
-  const openActionLabel = table.openActionLabel || "Open";
+  const exportActionLabel = table.exportActionLabel || "Export CSV";
 
   return `
     <div class="table-preview table-preview--${variant} ${isPromoted ? "table-preview--promoted" : "table-preview--widget"} ${isTrackerStyle ? "table-preview--tracker" : ""} ${isTurnoverStyle ? "table-preview--turnover" : ""} ${isTerminatedStyle ? "table-preview--terminated" : ""} ${hasNeutralHeader ? "table-preview--neutral-header" : ""}" data-node-id="883:13314">
@@ -734,17 +757,9 @@ function TablePreview({ artifactId, variant = "compact", interactive = false, sh
               ? `
                 <button class="table-preview__export" type="button" data-action="artifact-menu-command" data-menu-command="download" data-artifact-id="${artifactId}" aria-label="${escapeHtml(exportActionLabel)}" title="${escapeHtml(exportActionLabel)}">
                   ${svgIcon("download", 16)}
+                  <span>${escapeHtml(exportActionLabel)}</span>
                 </button>
               `
-              : ""
-          }
-          ${
-            showOpenAction
-              ? `
-              <button class="table-preview__open" type="button" data-action="${openAction}" data-artifact-id="${artifactId}">
-                ${escapeHtml(openActionLabel)}
-              </button>
-            `
               : ""
           }
         </div>
@@ -905,18 +920,46 @@ function ReportUpdateConfirmation(message) {
 
 function ChatOutputCanvasLinks(message) {
   const artifact = getArtifactById(message.artifactId);
-  if (!artifact?.canvasLinks?.length) return "";
+  if (!artifact || !isReportArtifact(artifact)) return "";
+
+  const reportLinks = artifact.canvasLinks?.length
+    ? artifact.canvasLinks
+    : [
+        {
+          label: artifact.label,
+          meta: "New",
+          url: getRipplingReportUrl(message.artifactId)
+        }
+      ];
+  const linkText = artifact.reportLinkText || "You can continue working with this report in Rippling.";
 
   return `
     <div class="chat-output-canvas-links" aria-label="Report actions">
-      ${artifact.canvasLinks
+      <p class="chat-output-canvas-links__text">${escapeHtml(linkText)}</p>
+      ${reportLinks
         .map(
-          (link) => `
-            <button class="chat-output-canvas-link" type="button" data-action="open-main-canvas-artifact" data-artifact-id="${message.artifactId}">
-              <span>${escapeHtml(link.label)}</span>
-              ${svgIcon("chevronRight", 14)}
+          (link) => {
+            const action = link.action === "mainCanvas" ? "open-main-canvas-artifact" : "open-rippling-report";
+            const url = link.url || getRipplingReportUrl(message.artifactId);
+            const label = (link.title || link.label || artifact.label).replace(/^Report:\s*/i, "").replace(/\s+report$/i, "");
+            const meta = link.meta || "New";
+
+            return `
+            <button class="chat-output-canvas-link" type="button" data-node-id="4634:40644" data-action="${action}" data-artifact-id="${message.artifactId}" data-report-url="${escapeHtml(url)}">
+              <span class="chat-output-canvas-link__preview" aria-hidden="true">
+                <span class="chat-output-canvas-link__mini">
+                  ${figmaArtifactIcon("chart", 16)}
+                  <span>Reports</span>
+                </span>
+              </span>
+              <span class="chat-output-canvas-link__content">
+                <strong>${escapeHtml(label)}</strong>
+                <small>${escapeHtml(meta)}</small>
+              </span>
+              <span class="chat-output-canvas-link__open">Open</span>
             </button>
-          `
+          `;
+          }
         )
         .join("")}
     </div>
@@ -963,7 +1006,7 @@ function ExternalLinksList(artifact) {
               class="external-link-card"
               type="button"
               aria-label="Open ${escapeHtml(link.title)}"
-              ${link.artifactId ? `data-action="view-chat-output" data-artifact-id="${link.artifactId}"` : ""}
+              ${link.artifactId ? `data-action="open-external-artifact" data-artifact-id="${link.artifactId}"` : ""}
             >
               <span class="external-link-card__icon" aria-hidden="true">
                 ${svgIcon("time", 16)}
@@ -1088,14 +1131,17 @@ function ChatThread({ mode = "sidebar" } = {}) {
     <div class="chat-thread" role="log" aria-live="polite" aria-label="Chat messages">
       ${prototypeState.chatMessages
         .map((message) => {
-          const isPdfOutput = Boolean(getArtifactById(message.artifactId)?.pdfPreview);
+          const artifact = getArtifactById(message.artifactId);
+          const isPdfOutput = Boolean(artifact?.pdfPreview);
           const isDashboardOutput = Boolean(message.metrics?.length);
           const isLinkListOutput = message.responseLayout === "linkList";
           const isEditingOutput = message.artifactId && editingArtifactId === message.artifactId;
+          const isWideReportOutput = mode === "fullscreen" && message.preview === "report" && isWideReportArtifact(message.artifactId);
           const outputClassName = message.role === "assistant"
             ? [
                 "chat-output",
                 message.preview ? "chat-output--has-preview" : "",
+                isWideReportOutput ? "chat-output--wide-report" : "",
                 isPdfOutput ? "chat-output--pdf" : "",
                 isLinkListOutput ? "chat-output--links" : "",
                 isDashboardOutput ? "chat-output--dashboard" : "",
@@ -1106,6 +1152,7 @@ function ChatThread({ mode = "sidebar" } = {}) {
             "chat-message",
             `chat-message--${message.role}`,
             isLinkListOutput ? "chat-message--links" : "",
+            isWideReportOutput ? "chat-message--wide-report" : "",
             isEditingOutput ? "chat-message--editing" : ""
           ].filter(Boolean).join(" ");
 
@@ -1612,6 +1659,13 @@ const artifactItems = [
         { label: "Fri", value: 8.5 }
       ]
     },
+    canvasLinks: [
+      {
+        label: "Start and Finish Times",
+        meta: "New",
+        action: "mainCanvas"
+      }
+    ],
     sections: [
       {
         title: "Report fields",
@@ -1633,6 +1687,7 @@ const artifactItems = [
     eyebrow: "Benefits document",
     icon: ArtifactTrayAssets.document,
     tone: "berry",
+    externalUrl: "about:blank",
     summary: "A PDF-ready benefits summary covering current medical, dental, vision, retirement, and spending account elections.",
     responseSummaryBlocks: [
       {
@@ -1711,10 +1766,7 @@ const artifactItems = [
     tablePreview: {
       title: "Terminated employees report",
       displayStyle: "terminated",
-      exportActionLabel: "Export",
-      showOpenAction: true,
-      openAction: "mainCanvas",
-      openActionLabel: "Open",
+      exportActionLabel: "Export CSV",
       compactRows: 6,
       columns: [
         { key: "employee", label: "Employee name", width: "176px" },
@@ -1745,6 +1797,13 @@ const artifactItems = [
         { employee: "Phoebe Buffay", title: "Staff Engineer", department: "R & D", terminationDate: "5/12/2026", terminationType: "Involuntary", reason: "Restructure", annualSalary: "$186,812.50", paidThrough: "$627,288.39" }
       ]
     },
+    canvasLinks: [
+      {
+        label: "Terminated employees",
+        meta: "New",
+        action: "mainCanvas"
+      }
+    ],
     sections: [
       {
         title: "Scope",
@@ -1781,10 +1840,7 @@ const artifactItems = [
     tablePreview: {
       title: "Severance agreements report",
       displayStyle: "terminated",
-      exportActionLabel: "Export",
-      showOpenAction: true,
-      openAction: "mainCanvas",
-      openActionLabel: "Open",
+      exportActionLabel: "Export CSV",
       compactRows: 6,
       columns: [
         { key: "employee", label: "Employee name", width: "176px" },
@@ -1808,6 +1864,13 @@ const artifactItems = [
         { employee: "Phoebe Buffay", department: "R & D", terminationDate: "5/12/2026", agreementDate: "5/15/2026", status: "Signed", severanceWeeks: "20", severanceAmount: "$71,850.96", paymentDate: "5/29/2026" }
       ]
     },
+    canvasLinks: [
+      {
+        label: "Severance agreements",
+        meta: "New",
+        action: "mainCanvas"
+      }
+    ],
     sections: [
       {
         title: "Scope",
@@ -1940,6 +2003,13 @@ const artifactItems = [
         { month: "June", rate: "1%", change: "0%" }
       ]
     },
+    canvasLinks: [
+      {
+        label: "Turnover rate, 2026",
+        meta: "New",
+        action: "mainCanvas"
+      }
+    ],
     sections: [
       {
         title: "Calculation",
@@ -1989,6 +2059,13 @@ const artifactItems = [
         { employee: "Taylor Chen", department: "Clinical", utilization: { value: "62%", trend: "down" }, target: "85%", status: { label: "Under", tone: "neutral" }, action: "Review schedule availability" }
       ]
     },
+    canvasLinks: [
+      {
+        label: "Under and over utilized employees",
+        meta: "New",
+        action: "mainCanvas"
+      }
+    ],
     sections: [
       {
         title: "Method",
@@ -2090,6 +2167,38 @@ function getArtifactById(artifactId) {
   return artifactItems.find((item) => item.id === artifactId);
 }
 
+function artifactSlug(value) {
+  return String(value || "artifact")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "artifact";
+}
+
+function isExternalArtifact(artifact) {
+  return Boolean(artifact?.pdfPreview || artifact?.externalLink);
+}
+
+function isReportArtifact(artifact) {
+  return Boolean(artifact?.reportPreview || artifact?.tablePreview || artifact?.dashboardDetail);
+}
+
+function getExternalArtifactUrl(artifactId) {
+  const artifact = getArtifactById(artifactId);
+  if (!artifact) return "";
+
+  return artifact.externalUrl
+    || artifact.pdfPreview?.url
+    || artifact.externalLink?.url
+    || `https://app.rippling.com/files/${artifactSlug(artifact.label || artifactId)}`;
+}
+
+function getRipplingReportUrl(artifactId) {
+  const artifact = getArtifactById(artifactId);
+  if (!artifact) return "";
+
+  return artifact.ripplingUrl || `https://app.rippling.com/reports/${artifactSlug(artifact.label || artifactId)}`;
+}
+
 function isTrayArtifact(artifactId) {
   const artifact = getArtifactById(artifactId);
   return Boolean(artifact && (artifact.reportPreview || artifact.tablePreview || artifact.workflowPreview || artifact.pdfPreview || artifact.dashboardDetail || artifact.externalLink));
@@ -2120,6 +2229,83 @@ function getCurrentArtifactItems() {
   return prototypeState.artifactTrayIds.map(getArtifactById).filter(Boolean);
 }
 
+function getArtifactTrayGroups(items) {
+  const ripplingItems = items.filter((item) => !isExternalArtifact(item));
+  const externalItems = items.filter(isExternalArtifact);
+
+  return [
+    { id: "rippling", label: "Rippling artifacts", items: ripplingItems },
+    { id: "external", label: "External artifacts", items: externalItems }
+  ].filter((group) => group.items.length);
+}
+
+function getArtifactTrayIconName(item) {
+  if (isExternalArtifact(item)) return "document";
+  if (item.workflowPreview) return "lightning";
+  return "chart";
+}
+
+function ArtifactTrayIcon(item) {
+  const typeClass = item.pdfPreview
+    ? "artifact-item__icon--external-pdf"
+    : isExternalArtifact(item)
+      ? "artifact-item__icon--external"
+      : "artifact-item__icon--internal";
+  return `
+    <span class="artifact-item__icon ${typeClass}" aria-hidden="true">
+      ${figmaArtifactIcon(getArtifactTrayIconName(item), 16)}
+    </span>
+  `;
+}
+
+function ArtifactTrayButton(item) {
+  const label = escapeHtml(item.label);
+  return `
+    <button class="artifact-item artifact-item--${isExternalArtifact(item) ? "external" : "internal"}" type="button" data-artifact-id="${item.id}" aria-label="${label}" title="${label}">
+      ${ArtifactTrayIcon(item)}
+      <span class="artifact-item__label" title="${label}">${label}</span>
+    </button>
+  `;
+}
+
+function ArtifactTakeoverButton(item) {
+  const label = escapeHtml(item.label);
+  return `
+    <button class="artifact-takeover-item artifact-takeover-item--${isExternalArtifact(item) ? "external" : "internal"}" type="button" data-artifact-id="${item.id}" aria-label="${label}" title="${label}">
+      ${ArtifactTrayIcon(item)}
+      <span class="artifact-takeover-item__label">
+        <strong title="${label}">${label}</strong>
+      </span>
+    </button>
+  `;
+}
+
+function ArtifactListSections(items, { itemRenderer = ArtifactTrayButton } = {}) {
+  const groups = getArtifactTrayGroups(items);
+
+  return groups
+    .map(
+      (group, index) => `
+        ${index ? '<div class="artifact-list-separator" aria-hidden="true"></div>' : ""}
+        <section class="artifact-list-section artifact-list-section--${group.id}" aria-label="${escapeHtml(group.label)}">
+          <p class="artifact-list-section__title">${escapeHtml(group.label)}</p>
+          ${group.items.map(itemRenderer).join("")}
+        </section>
+      `
+    )
+    .join("");
+}
+
+function getArtifactTrayHeight(items, mode) {
+  const groups = getArtifactTrayGroups(items);
+  const itemCount = items.length || 1;
+  const sectionCount = groups.length || 1;
+  const separatorCount = Math.max(sectionCount - 1, 0);
+  const height = 52 + itemCount * 40 + sectionCount * 34 + separatorCount;
+
+  return mode === "fullscreen" ? height : Math.min(height, 360);
+}
+
 function ArtifactTrayEmptyState() {
   return `
     <div class="artifact-empty-card" data-node-id="4487:34481">
@@ -2131,31 +2317,27 @@ function ArtifactTrayEmptyState() {
 
 function ArtifactTray({ mode = "component" } = {}) {
   const items = getCurrentArtifactItems();
-  const trayHeight = Math.min(88 + Math.max(items.length, 1) * 30, 360);
+  const trayHeight = getArtifactTrayHeight(items, mode);
   const isSidebarTray = mode === "sidebar";
+  const showHeader = mode !== "fullscreen";
   return `
     <aside class="artifact-tray artifact-tray--${mode} ${items.length > 3 ? "artifact-tray--has-many" : ""} ${items.length ? "" : "artifact-tray--empty"}" style="--artifact-tray-height: ${trayHeight}px" data-node-id="1682:16369" aria-label="Artifacts">
       ${
         items.length
           ? `
             <div class="artifact-tray__content">
-              <div class="artifact-tray__header">
-                <h2>Artifacts</h2>
-                ${isSidebarTray ? `<span class="artifact-tray__count" aria-label="${items.length} artifacts">${items.length}</span>` : ""}
-              </div>
+              ${
+                showHeader
+                  ? `
+                    <div class="artifact-tray__header">
+                      <h2>Artifacts</h2>
+                      ${isSidebarTray ? `<span class="artifact-tray__count" aria-label="${items.length} artifacts">${items.length}</span>` : ""}
+                    </div>
+                  `
+                  : ""
+              }
               <div class="artifact-tray__list">
-                ${items
-                  .map(
-                    (item) => `
-                      <button class="artifact-item" type="button" data-artifact-id="${item.id}">
-                        <span class="artifact-item__icon artifact-item__icon--${item.tone}">
-                          <img src="${item.icon}" alt="" />
-                        </span>
-                        <span class="artifact-item__label">${escapeHtml(item.label)}</span>
-                      </button>
-                    `
-                  )
-                  .join("")}
+                ${ArtifactListSections(items)}
               </div>
             </div>
           `
@@ -2190,40 +2372,26 @@ function ArtifactTakeoverPanel({ mode = "sidebar", variant = "takeover" } = {}) 
     : iconButton("close", "Close artifacts", "artifact-takeover__close", 'data-action="hide-artifact-tray"');
   return `
     <aside class="artifact-takeover artifact-takeover--${mode}${variantClass} ${items.length ? "" : "artifact-takeover--empty"} ${prototypeState.artifactTrayOpen ? "is-open" : "is-hidden"}" aria-label="Artifacts" ${isPushUp ? 'data-node-id="2014:32301"' : ""}>
-      <div class="artifact-takeover__header">
-        <div class="artifact-takeover__title">
-          <p>Artifacts</p>
-          ${showArtifactCount ? `<span class="artifact-takeover__count" aria-label="${items.length} artifacts">${items.length}</span>` : ""}
-        </div>
-        ${headerAction}
-      </div>
+      ${
+        isPushUp
+          ? ""
+          : `
+            <div class="artifact-takeover__header">
+              <div class="artifact-takeover__title">
+                <p>Artifacts</p>
+                ${showArtifactCount ? `<span class="artifact-takeover__count" aria-label="${items.length} artifacts">${items.length}</span>` : ""}
+              </div>
+              ${headerAction}
+            </div>
+          `
+      }
       <div class="artifact-takeover__list">
         ${
           items.length
-            ? items
-                .map(
-                  (item) => `
-                    <button class="artifact-takeover-item" type="button" data-artifact-id="${item.id}">
-                      ${
-                        isPushUp
-                          ? `<span class="artifact-dropdown-icon">${svgIcon("barChart", 16)}</span>`
-                          : `
-                            <span class="artifact-item__icon artifact-item__icon--${item.tone}">
-                              <img src="${item.icon}" alt="" />
-                            </span>
-                          `
-                      }
-                      <span>
-                        <strong>${escapeHtml(item.label)}</strong>
-                        <small>${escapeHtml(item.eyebrow)}</small>
-                      </span>
-                    </button>
-                  `
-                )
-                .join("")
+            ? ArtifactListSections(items, { itemRenderer: ArtifactTakeoverButton })
             : ArtifactTrayEmptyState()
         }
-      </div>
+        </div>
     </aside>
   `;
 }
@@ -2593,8 +2761,9 @@ function ArtifactReader({ artifactId = null, mode = prototypeState.artifactMode,
     return DashboardArtifactReader({ artifact, mode, showFooterActions });
   }
 
-  const metrics = artifact.metrics || [];
-  const sections = artifact.sections || [];
+  const isReportReader = Boolean(artifact.reportPreview || artifact.tablePreview);
+  const metrics = isReportReader ? [] : artifact.metrics || [];
+  const sections = isReportReader ? [] : artifact.sections || [];
   return `
     <section class="artifact-reader artifact-reader--${mode}" aria-label="${escapeHtml(artifact.label)}">
       <div class="artifact-reader__header">
@@ -2737,10 +2906,12 @@ function ChatPanel({ mode = "sidebar" } = {}) {
   const useBottomSheetTray = !isFull && prototypeState.sideTrayMode === "bottomSheet";
   const usePushUpTray = !isFull && prototypeState.sideTrayMode === "pushUp";
   const useSideCarTray = !isFull && prototypeState.sideTrayMode === "sideCar";
+  const hasWideReport = isFull && prototypeState.chatMessages.some((message) => message.preview === "report" && isWideReportArtifact(message.artifactId));
   const artifactTrayClass = prototypeState.artifactTrayOpen ? "is-open" : "is-hidden";
   const nodeId = isFull ? "298:43955" : "298:43951";
   const artifactClass = isFull && usesSideArtifactSurface ? ` ai-panel--artifact-${prototypeState.artifactMode}` : "";
   const sideTrayClass = !isFull ? ` ai-panel--side-tray-${prototypeState.sideTrayMode}` : "";
+  const wideReportClass = hasWideReport ? " chat-content--has-wide-report" : "";
   const chatTitle = conversationData[prototypeState.activeConversationId]?.title || "{{Chat title}}";
   const historyTooltip = prototypeState.chatHistoryOpen || showChatHistory ? "Hide history" : "View history";
   return `
@@ -2808,7 +2979,7 @@ function ChatPanel({ mode = "sidebar" } = {}) {
             `
             : ""
         }
-        <div class="chat-content chat-content--${mode} ${prototypeState.chatMessages.length ? "chat-content--has-messages" : ""}">
+        <div class="chat-content chat-content--${mode}${wideReportClass} ${prototypeState.chatMessages.length ? "chat-content--has-messages" : ""}">
           ${ChatThread({ mode })}
           <div class="chat-spacer"></div>
         </div>
@@ -3058,7 +3229,14 @@ function toggleNavPin() {
 }
 
 function shouldUseModalArtifactSurface(artifactId) {
-  return prototypeState.artifactMode === "onTop" || (prototypeState.artifactMode === "onLeft" && artifactId === "benefits-pdf");
+  return prototypeState.artifactMode === "onTop";
+}
+
+function openExternalArtifact(artifactId) {
+  const url = getExternalArtifactUrl(artifactId);
+  if (!url) return;
+
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 function openArtifactModal(artifactId) {
@@ -3077,7 +3255,13 @@ function openArtifactModal(artifactId) {
 }
 
 function openArtifact(artifactId) {
-  if (!getArtifactById(artifactId)) return;
+  const artifact = getArtifactById(artifactId);
+  if (!artifact) return;
+
+  if (isExternalArtifact(artifact)) {
+    openExternalArtifact(artifactId);
+    return;
+  }
 
   if (shouldUseModalArtifactSurface(artifactId)) {
     openArtifactModal(artifactId);
@@ -3114,7 +3298,13 @@ function openArtifact(artifactId) {
 }
 
 function openArtifactOnLeft(artifactId) {
-  if (!getArtifactById(artifactId)) return;
+  const artifact = getArtifactById(artifactId);
+  if (!artifact) return;
+
+  if (isExternalArtifact(artifact)) {
+    openExternalArtifact(artifactId);
+    return;
+  }
 
   clearLeftArtifactBuildState();
 
@@ -3628,6 +3818,30 @@ function bindLayoutInteractions() {
     });
   });
 
+  document.querySelectorAll('[data-action="open-external-artifact"]').forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openExternalArtifact(button.dataset.artifactId);
+    });
+
+    button.addEventListener("keydown", (event) => {
+      if (button.tagName === "BUTTON") return;
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      openExternalArtifact(button.dataset.artifactId);
+    });
+  });
+
+  document.querySelectorAll('[data-action="open-rippling-report"]').forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const url = button.dataset.reportUrl || getRipplingReportUrl(button.dataset.artifactId);
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
+    });
+  });
+
   document.querySelectorAll('[data-action="open-main-canvas-artifact"]').forEach((button) => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
@@ -4088,6 +4302,7 @@ function renderApp() {
   bindInteractions();
   syncChatViewport();
   positionSnackbarHost();
+  dismissFullscreenArtifactTrayOnCollision();
 }
 
 function renderAppLayout() {
@@ -4102,6 +4317,7 @@ function renderAppLayout() {
   bindLayoutInteractions();
   syncChatViewport();
   positionSnackbarHost();
+  dismissFullscreenArtifactTrayOnCollision();
 }
 
 function renderSnackbarOnly() {
@@ -4128,12 +4344,37 @@ function positionSnackbarHost() {
   host.style.setProperty("--snackbar-x-offset", "0");
 }
 
+function dismissFullscreenArtifactTrayOnCollision() {
+  if (prototypeState.chatMode !== "fullscreen" || !prototypeState.artifactTrayOpen) return;
+
+  const dock = document.querySelector(".artifact-dock--fullscreen.is-open");
+  const composer = document.querySelector(".ai-composer--compact");
+  if (!dock || !composer) return;
+
+  const dockRect = dock.getBoundingClientRect();
+  const composerRect = composer?.getBoundingClientRect();
+  const reportRight = Array.from(document.querySelectorAll(".chat-content--fullscreen .chat-message--wide-report .table-preview"))
+    .reduce((right, element) => {
+      const rect = element.getBoundingClientRect();
+      const isVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+      return isVisible ? Math.max(right, rect.right) : right;
+    }, 0);
+  const collisionRight = Math.max(composerRect?.right || 0, reportRight);
+  const collisionBuffer = 24;
+
+  if (dockRect.left < collisionRight + collisionBuffer) {
+    setArtifactTrayOpen(false, { userInitiated: true });
+  }
+}
+
 function handleWindowResize() {
   positionSnackbarHost();
 
   if (prototypeState.artifactTrayOpen && document.querySelector(".artifact-takeover--push-up")) {
     setArtifactTrayOpen(false);
   }
+
+  dismissFullscreenArtifactTrayOnCollision();
 }
 
 function renderWorkbenchOnly() {
