@@ -4,6 +4,7 @@ const Icon = {
   chevronUp: '<path d="m7 14 5-5 5 5"/>',
   chevronRight: '<path d="m9 6 6 6-6 6"/>',
   search: '<circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/>',
+  time: '<circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/><path d="M12 8v4l3 2" stroke="#fff" stroke-width="1.75" fill="none"/>',
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>',
   help: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="m5.6 5.6 4 4M18.4 5.6l-4 4M18.4 18.4l-4-4M5.6 18.4l4-4"/>',
   globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
@@ -94,8 +95,10 @@ function escapeHtml(value) {
   });
 }
 
-function iconButton(name, label, className = "", attrs = "") {
-  return `<button class="icon-button ${className}" type="button" aria-label="${label}" title="${label}" ${attrs}>${svgIcon(name)}</button>`;
+function iconButton(name, label, className = "", attrs = "", tooltipLabel = label) {
+  const safeLabel = escapeHtml(label);
+  const safeTooltip = escapeHtml(tooltipLabel);
+  return `<button class="icon-button ${className}" type="button" aria-label="${safeLabel}" title="${safeTooltip}" data-tooltip="${safeTooltip}" ${attrs}>${svgIcon(name)}</button>`;
 }
 
 function topNavAssetIcon(source, label, className = "") {
@@ -218,7 +221,7 @@ function ChatArtifactMenu() {
     <div class="chat-artifact-menu">
       ${iconButton(
         "info",
-        "Open artifacts",
+        "Artifacts",
         `artifact-trigger chat-artifact-menu__trigger ${prototypeState.artifactTrayOpen ? "is-active" : ""}`,
         `data-action="toggle-artifact-tray" aria-expanded="${prototypeState.artifactTrayOpen}"`
       )}
@@ -229,7 +232,7 @@ function ChatArtifactMenu() {
 function TopNav() {
   return `
     <header class="top-nav" data-node-id="1534:19677">
-      <div class="top-nav__brand">
+      <button class="top-nav__brand" type="button" data-action="reset-to-default-chat" aria-label="Return to default chat">
         <div class="rippling-mark" aria-hidden="true">
           ${RipplingMark()}
         </div>
@@ -238,7 +241,7 @@ function TopNav() {
           <span class="top-nav-chevron" aria-hidden="true">${svgIcon("chevronDown", 16)}</span>
           <div class="top-nav__divider"></div>
         </div>
-      </div>
+      </button>
       <label class="top-nav__search">
         ${svgIcon("search", 16)}
         <input aria-label="Search or jump to" placeholder="Search or jump to..." />
@@ -401,8 +404,9 @@ const promptItems = [
     artifactId: "benefits-pdf"
   },
   {
-    label: "Show me a list of multiple links",
-    artifactId: "multiple-links"
+    label: "Create a report of terminated employees",
+    artifactId: "terminated-employees-report",
+    chatText: "create a report of all terminatrd employees. Add termination dates; Annual salary; how much we paid until their termination date. This report will be for all employees terminated from January 1, 2026 through May 12, 2026.\nAlso add a current headcount and what the headcount was on 1/1/26"
   },
   {
     label: "Show me my turnover rate for the year",
@@ -413,7 +417,7 @@ const promptItems = [
     artifactId: "employee-utilization-review"
   },
   {
-    label: "Identify employees who are not promoted in last 2 years",
+    label: "Create a workflow that says good morning every day at 8am",
     artifactId: "promotion-review"
   }
 ];
@@ -511,15 +515,39 @@ function ReportPreview({ artifactId, variant = "compact", interactive = false, s
   if (!preview) return "";
 
   const maxTick = Math.max(...preview.ticks);
-  const actionAttrs = interactive ? `role="button" tabindex="0" data-action="view-chat-output" data-artifact-id="${artifactId}" aria-label="View ${escapeHtml(artifact.label)}"` : "";
+  const showExportAction = interactive && preview.showExportAction !== false;
+  const showOpenAction = interactive && preview.showOpenAction !== false;
+  const exportLabel = preview.exportActionLabel || "Export";
+  const openLabel = preview.openActionLabel || "Open";
 
   return `
-    <div class="report-preview report-preview--${variant}" ${actionAttrs}>
+    <div class="report-preview report-preview--${variant}">
       <div class="report-preview__header">
         <h3>${escapeHtml(preview.title)}</h3>
         ${
-          interactive && showMoreMenu
-            ? ArtifactMoreMenu({ artifactId })
+          interactive
+            ? `
+              <div class="report-preview__actions">
+                ${
+                  showExportAction
+                    ? `
+                      <button class="report-preview__export" type="button" data-action="artifact-menu-command" data-menu-command="download" data-artifact-id="${artifactId}" aria-label="${escapeHtml(exportLabel)}" title="${escapeHtml(exportLabel)}">
+                        ${svgIcon("download", 16)}
+                      </button>
+                    `
+                    : ""
+                }
+                ${
+                  showOpenAction
+                    ? `
+                      <button class="report-preview__open" type="button" data-action="view-chat-output" data-artifact-id="${artifactId}">
+                        ${escapeHtml(openLabel)}
+                      </button>
+                    `
+                    : ""
+                }
+              </div>
+            `
             : ""
         }
       </div>
@@ -554,6 +582,10 @@ function WorkflowPreview({ artifactId, variant = "compact", interactive = false,
   const preview = artifact?.workflowPreview;
   if (!preview) return "";
 
+  if (preview.displayStyle === "linkCard") {
+    return WorkflowLinkCard({ artifactId, variant, interactive });
+  }
+
   const actionAttrs = interactive ? `role="button" tabindex="0" data-action="view-chat-output" data-artifact-id="${artifactId}" aria-label="View ${escapeHtml(artifact.label)}"` : "";
 
   return `
@@ -572,6 +604,36 @@ function WorkflowPreview({ artifactId, variant = "compact", interactive = false,
           <p>${escapeHtml(preview.action)}</p>
         </section>
       </div>
+    </div>
+  `;
+}
+
+function WorkflowLinkCard({ artifactId, variant = "compact", interactive = false } = {}) {
+  const artifact = getArtifactById(artifactId);
+  const preview = artifact?.workflowPreview;
+  if (!preview) return "";
+
+  return `
+    <div class="workflow-link-card workflow-link-card--${variant}" data-node-id="4320:56641">
+      <div class="workflow-link-card__preview" aria-hidden="true">
+        <div class="workflow-link-card__mini">
+          <span>${svgIcon("sparkle", 16)}</span>
+          <span>${escapeHtml(preview.kindLabel || "Workflows")}</span>
+        </div>
+      </div>
+      <div class="workflow-link-card__content">
+        <strong>${escapeHtml(preview.title)}</strong>
+        <span>${escapeHtml(preview.status || "Draft")}</span>
+      </div>
+      ${
+        interactive
+          ? `
+            <button class="workflow-link-card__open" type="button" data-action="view-chat-output" data-artifact-id="${artifactId}">
+              ${escapeHtml(preview.openActionLabel || "Open")}
+            </button>
+          `
+          : ""
+      }
     </div>
   `;
 }
@@ -648,26 +710,44 @@ function TablePreview({ artifactId, variant = "compact", interactive = false, sh
   if (!table) return "";
 
   const isCompact = variant === "compact";
-  const isPromoted = promoted ?? isArtifactPromoted(artifactId);
   const isTrackerStyle = table.displayStyle === "tracker";
   const isTurnoverStyle = table.displayStyle === "turnover";
-  const showColumnChevrons = isTrackerStyle || isTurnoverStyle;
+  const isTerminatedStyle = table.displayStyle === "terminated";
+  const hasNeutralHeader = table.neutralHeader === true;
+  const isPromoted = isTerminatedStyle ? false : promoted ?? isArtifactPromoted(artifactId);
+  const showColumnChevrons = isTrackerStyle || isTurnoverStyle || isTerminatedStyle;
   const columns = isCompact ? table.columns.filter((column) => column.compact !== false) : table.columns;
   const rows = isCompact ? table.rows.slice(0, table.compactRows || 4) : table.rows;
+  const showExportAction = interactive && table.showExportAction !== false;
+  const showOpenAction = interactive && table.showOpenAction !== false;
+  const exportActionLabel = table.exportActionLabel || "Export";
+  const openAction = table.openAction === "mainCanvas" ? "open-main-canvas-artifact" : "view-chat-output";
+  const openActionLabel = table.openActionLabel || "Open";
 
   return `
-    <div class="table-preview table-preview--${variant} ${isPromoted ? "table-preview--promoted" : "table-preview--widget"} ${isTrackerStyle ? "table-preview--tracker" : ""} ${isTurnoverStyle ? "table-preview--turnover" : ""}" data-node-id="883:13314">
+    <div class="table-preview table-preview--${variant} ${isPromoted ? "table-preview--promoted" : "table-preview--widget"} ${isTrackerStyle ? "table-preview--tracker" : ""} ${isTurnoverStyle ? "table-preview--turnover" : ""} ${isTerminatedStyle ? "table-preview--terminated" : ""} ${hasNeutralHeader ? "table-preview--neutral-header" : ""}" data-node-id="883:13314">
       <div class="table-preview__titlebar">
         <h3>${escapeHtml(table.title)}</h3>
-        ${
-          interactive
-            ? `
-              <button class="table-preview__open" type="button" data-action="view-chat-output" data-artifact-id="${artifactId}">
-                Open
+        <div class="table-preview__actions">
+          ${
+            showExportAction
+              ? `
+                <button class="table-preview__export" type="button" data-action="artifact-menu-command" data-menu-command="download" data-artifact-id="${artifactId}" aria-label="${escapeHtml(exportActionLabel)}" title="${escapeHtml(exportActionLabel)}">
+                  ${svgIcon("download", 16)}
+                </button>
+              `
+              : ""
+          }
+          ${
+            showOpenAction
+              ? `
+              <button class="table-preview__open" type="button" data-action="${openAction}" data-artifact-id="${artifactId}">
+                ${escapeHtml(openActionLabel)}
               </button>
             `
-            : ""
-        }
+              : ""
+          }
+        </div>
       </div>
       <div class="table-preview__scroller">
         <table aria-label="${escapeHtml(table.title)}">
@@ -706,6 +786,15 @@ function TablePreview({ artifactId, variant = "compact", interactive = false, sh
           </tbody>
         </table>
       </div>
+      ${
+        isTerminatedStyle
+          ? `
+            <button class="table-preview__scroll-next" type="button" data-action="scroll-table-next" aria-label="Scroll report right" title="Scroll report right">
+              ${svgIcon("chevronRight", 18)}
+            </button>
+          `
+          : ""
+      }
     </div>
   `;
 }
@@ -763,32 +852,48 @@ function TurnoverAnswer(message) {
   `;
 }
 
-function ExternalLinksAnswer(message) {
+function TerminatedEmployeesAnswer(message) {
   const artifact = getArtifactById(message.artifactId);
-  const links = artifact?.externalLinks || [];
+  const report = artifact?.responseReport;
+  if (!report) return `<p>${escapeHtml(message.body)}</p>`;
 
   return `
-    <div class="chat-output-summary chat-output-summary--links">
-      <section class="chat-output-summary__block">
-        <h2>${escapeHtml(artifact?.linkListTitle || "Links")}</h2>
-        <p>${escapeHtml(artifact?.linkListSummary || message.body)}</p>
+    <div class="terminated-report-answer">
+      <section class="terminated-report-answer__intro">
+        <h2>${escapeHtml(report.title)}</h2>
       </section>
-      <div class="external-link-list" aria-label="Suggested links">
-        ${links
+      ${report.sections
+        .map(
+          (section) => `
+            <section class="terminated-report-answer__section">
+              <h3>${escapeHtml(section.title)}</h3>
+              ${section.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+            </section>
+          `
+        )
+        .join("")}
+      <h3 class="terminated-report-answer__detail-title">${escapeHtml(report.detailTitle)}</h3>
+    </div>
+  `;
+}
+
+function ReportUpdateConfirmation(message) {
+  const confirmation = message.confirmation || {};
+  const options = confirmation.options || [
+    "Yes, update the report",
+    "No, create a different report"
+  ];
+
+  return `
+    <div class="report-update-confirmation" data-node-id="4470:16656">
+      <h2>${escapeHtml(confirmation.title || message.body)}</h2>
+      <div class="report-update-confirmation__options" role="group" aria-label="${escapeHtml(confirmation.title || message.body)}">
+        ${options
           .map(
-            (link) => `
-              <button class="external-link-card" type="button" aria-label="Open ${escapeHtml(link.title)}">
-                <span class="external-link-card__icon" aria-hidden="true">
-                  ${link.type === "pdf" ? pdfFileIcon(14) : svgIcon("document", 14)}
-                </span>
-                <span class="external-link-card__content">
-                  <strong>${escapeHtml(link.title)}</strong>
-                  <small>${escapeHtml(link.meta)}</small>
-                </span>
-                <span class="external-link-card__source" aria-hidden="true">
-                  ${googleDriveIcon(20)}
-                </span>
-                <span class="external-link-card__open">Open</span>
+            (option, index) => `
+              <button class="report-update-confirmation__option" type="button" aria-pressed="${index === 0 ? "true" : "false"}">
+                <span class="report-update-confirmation__radio ${index === 0 ? "is-selected" : ""}" aria-hidden="true"></span>
+                <span>${escapeHtml(option)}</span>
               </button>
             `
           )
@@ -798,13 +903,122 @@ function ExternalLinksAnswer(message) {
   `;
 }
 
+function ChatOutputCanvasLinks(message) {
+  const artifact = getArtifactById(message.artifactId);
+  if (!artifact?.canvasLinks?.length) return "";
+
+  return `
+    <div class="chat-output-canvas-links" aria-label="Report actions">
+      ${artifact.canvasLinks
+        .map(
+          (link) => `
+            <button class="chat-output-canvas-link" type="button" data-action="open-main-canvas-artifact" data-artifact-id="${message.artifactId}">
+              <span>${escapeHtml(link.label)}</span>
+              ${svgIcon("chevronRight", 14)}
+            </button>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function GoodMorningWorkflowAnswer(message) {
+  const artifact = getArtifactById(message.artifactId);
+  const response = artifact?.workflowResponse;
+  if (!response) return `<p>${escapeHtml(message.body)}</p>`;
+
+  return `
+    <div class="workflow-response-summary">
+      <p>${escapeHtml(response.createdText)}</p>
+      <section class="workflow-response-summary__about">
+        <h2>${escapeHtml(response.aboutTitle)}</h2>
+        <ul>
+          ${response.aboutItems.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+        </ul>
+      </section>
+      ${response.sections
+        .map(
+          (section) => `
+            <section class="workflow-response-summary__section">
+              <h2>${escapeHtml(section.title)}</h2>
+              <p>${escapeHtml(section.body)}</p>
+            </section>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function ExternalLinksList(artifact) {
+  const links = artifact?.externalLinks || (artifact?.externalLink ? [artifact.externalLink] : []);
+  const visibleLinks = links.length > 3 ? links.slice(0, 3) : links;
+  return `
+    <div class="external-link-list" aria-label="Suggested links" data-node-id="4426:41126">
+      ${visibleLinks
+        .map(
+          (link) => `
+            <button
+              class="external-link-card"
+              type="button"
+              aria-label="Open ${escapeHtml(link.title)}"
+              ${link.artifactId ? `data-action="view-chat-output" data-artifact-id="${link.artifactId}"` : ""}
+            >
+              <span class="external-link-card__icon" aria-hidden="true">
+                ${svgIcon("time", 16)}
+              </span>
+              <span class="external-link-card__content">
+                <strong>${escapeHtml(link.title)}</strong>
+                <small>${escapeHtml(link.meta)}</small>
+              </span>
+            </button>
+          `
+        )
+        .join("")}
+      ${
+        links.length > 3
+          ? `
+            <button class="external-link-list__see-all" type="button" data-action="toggle-artifact-tray" aria-label="See all linked artifacts">
+              ${svgIcon("chevronDown", 16)}
+              <span>See all</span>
+            </button>
+          `
+          : ""
+      }
+    </div>
+  `;
+}
+
+function ExternalLinksAnswer(message) {
+  const artifact = getArtifactById(message.artifactId);
+
+  return `
+    <div class="chat-output-summary chat-output-summary--links">
+      ${ExternalLinksList(artifact)}
+    </div>
+  `;
+}
+
 function ChatOutputSummary(message) {
   if (message.responseLayout === "turnoverNarrative") {
     return TurnoverAnswer(message);
   }
 
+  if (message.responseLayout === "terminatedReport") {
+    return TerminatedEmployeesAnswer(message);
+  }
+
+  if (message.responseLayout === "reportUpdateConfirmation") {
+    return ReportUpdateConfirmation(message);
+  }
+
   if (message.responseLayout === "linkList") {
     return ExternalLinksAnswer(message);
+  }
+
+  if (message.responseLayout === "workflowReminder") {
+    return GoodMorningWorkflowAnswer(message);
   }
 
   const blocks = message.summaryBlocks || (message.summaryTitle || message.summary || message.details
@@ -876,12 +1090,14 @@ function ChatThread({ mode = "sidebar" } = {}) {
         .map((message) => {
           const isPdfOutput = Boolean(getArtifactById(message.artifactId)?.pdfPreview);
           const isDashboardOutput = Boolean(message.metrics?.length);
+          const isLinkListOutput = message.responseLayout === "linkList";
           const isEditingOutput = message.artifactId && editingArtifactId === message.artifactId;
           const outputClassName = message.role === "assistant"
             ? [
                 "chat-output",
                 message.preview ? "chat-output--has-preview" : "",
                 isPdfOutput ? "chat-output--pdf" : "",
+                isLinkListOutput ? "chat-output--links" : "",
                 isDashboardOutput ? "chat-output--dashboard" : "",
                 isEditingOutput ? "chat-output--editing" : ""
               ].filter(Boolean).join(" ")
@@ -889,6 +1105,7 @@ function ChatThread({ mode = "sidebar" } = {}) {
           const articleClassName = [
             "chat-message",
             `chat-message--${message.role}`,
+            isLinkListOutput ? "chat-message--links" : "",
             isEditingOutput ? "chat-message--editing" : ""
           ].filter(Boolean).join(" ");
 
@@ -898,6 +1115,7 @@ function ChatThread({ mode = "sidebar" } = {}) {
                 ${isDashboardOutput && message.artifactId && !isEditingOutput ? `<div class="chat-output-dashboard-menu">${ArtifactMoreMenu({ artifactId: message.artifactId })}</div>` : ""}
                 ${message.role === "assistant" ? ChatOutputSummary(message) : `<p>${escapeHtml(message.body)}</p>`}
                 ${message.preview === "report" ? ArtifactPreview({ artifactId: message.artifactId, variant: previewVariant, interactive: true, showMoreMenu: !isDashboardOutput }) : ""}
+                ${message.preview === "report" ? ChatOutputCanvasLinks(message) : ""}
                 ${message.role === "assistant" ? ChatOutputInsight(message.insight) : ""}
               </div>
             </article>
@@ -1451,41 +1669,233 @@ const artifactItems = [
     ]
   },
   {
-    id: "multiple-links",
-    label: "Multiple links",
-    eyebrow: "External links",
+    id: "terminated-employees-report",
+    label: "Terminated employees report",
+    eyebrow: "Workforce report",
     icon: ArtifactTrayAssets.document,
     tone: "berry",
-    summary: "A grouped list of external resources returned as link cards.",
-    responseLayout: "linkList",
-    linkListTitle: "Related links",
-    linkListSummary: "Here are a few resources that may be useful.",
-    externalLinks: [
-      {
-        title: "Benefits summary",
-        meta: "PDF · Updated June 4th, 2026",
-        type: "pdf"
-      },
-      {
-        title: "Open enrollment checklist",
-        meta: "PDF · 6 pages",
-        type: "pdf"
-      },
-      {
-        title: "Medical plan comparison",
-        meta: "Document · Current plan year",
-        type: "document"
-      },
-      {
-        title: "HSA and FSA contribution guide",
-        meta: "Document · 2026 limits",
-        type: "document"
-      }
+    summary: "A detailed report of employees terminated between January 1, 2026 and May 12, 2026, including termination details, salary, payroll paid through termination, and headcount comparison.",
+    responseLayout: "terminatedReport",
+    responseReport: {
+      title: "Terminated employees report (January 1 – May 12, 2026)",
+      detailTitle: "Detailed terminated employees report",
+      sections: [
+        {
+          title: "Summary statistics",
+          paragraphs: [
+            "16 employees were terminated during this period. Of these, 14 were involuntary terminations and 2 were voluntary. The terminations resulted in $3,292,788.85 in total payroll paid through their termination dates. The average annual salary for terminated employees was $115,694.17, with a combined annual salary total of $1,735,412.50."
+          ]
+        },
+        {
+          title: "Termination breakdown",
+          paragraphs: [
+            "By type: 14 involuntary terminations (87.5%) and 2 voluntary terminations (12.5%). Of the involuntary terminations, 5 were performance-related.",
+            "By department: R & D was most heavily affected with 9 terminations, followed by Customer Success, Finance, and Support (2 each), and G&A (1)."
+          ]
+        },
+        {
+          title: "Headcount comparison",
+          paragraphs: [
+            "January 1, 2026 headcount: 101 active employees",
+            "Current headcount (May 11, 2026): 99 active employees",
+            "Net change: 2-employee reduction (accounting for the 16 terminations and new hires during the period)"
+          ]
+        }
+      ]
+    },
+    metrics: [
+      { value: "16", label: "terminated employees" },
+      { value: "$3.29M", label: "paid through termination" },
+      { value: "-2", label: "net headcount change" }
     ],
+    tablePreview: {
+      title: "Terminated employees report",
+      displayStyle: "terminated",
+      exportActionLabel: "Export",
+      showOpenAction: true,
+      openAction: "mainCanvas",
+      openActionLabel: "Open",
+      compactRows: 6,
+      columns: [
+        { key: "employee", label: "Employee name", width: "176px" },
+        { key: "title", label: "Title", width: "176px" },
+        { key: "department", label: "Department", width: "156px" },
+        { key: "terminationDate", label: "Termination date", width: "148px" },
+        { key: "terminationType", label: "Termination type", width: "148px" },
+        { key: "reason", label: "Reason", width: "150px" },
+        { key: "annualSalary", label: "Annual salary", type: "number", width: "140px", compact: false },
+        { key: "paidThrough", label: "Paid through termination", type: "number", width: "190px", compact: false }
+      ],
+      rows: [
+        { employee: "Jenny Jones", title: "SVP Product", department: "R & D", terminationDate: "1/9/2026", terminationType: "Voluntary", reason: "Voluntary", annualSalary: "$154,500.00", paidThrough: "$32,783.44" },
+        { employee: "Geraldo Riveria", title: "Engineer II", department: "R & D", terminationDate: "1/16/2026", terminationType: "Involuntary", reason: "Performance", annualSalary: "$118,750.00", paidThrough: "$45,192.31" },
+        { employee: "Ricky Lake", title: "Marketing Coordinator", department: "G&A", terminationDate: "1/22/2026", terminationType: "Involuntary", reason: "Role elimination", annualSalary: "$82,250.00", paidThrough: "$38,614.12" },
+        { employee: "Sally Jesse Raphael", title: "Specialist", department: "Customer Success", terminationDate: "2/2/2026", terminationType: "Involuntary", reason: "Performance", annualSalary: "$96,000.00", paidThrough: "$58,441.29" },
+        { employee: "Montell Williams", title: "Sales Development Rep", department: "Support", terminationDate: "2/18/2026", terminationType: "Involuntary", reason: "Performance", annualSalary: "$77,900.00", paidThrough: "$64,870.18" },
+        { employee: "Judge Judy", title: "Product Designer", department: "R & D", terminationDate: "2/24/2026", terminationType: "Voluntary", reason: "Voluntary", annualSalary: "$132,400.00", paidThrough: "$72,902.77" },
+        { employee: "Meredith Grey", title: "Research Engineer", department: "R & D", terminationDate: "3/3/2026", terminationType: "Involuntary", reason: "Restructure", annualSalary: "$124,000.00", paidThrough: "$91,384.62" },
+        { employee: "Cristina Yang", title: "Data Scientist", department: "R & D", terminationDate: "3/12/2026", terminationType: "Involuntary", reason: "Performance", annualSalary: "$139,500.00", paidThrough: "$112,736.54" },
+        { employee: "Olivia Pope", title: "Finance Manager", department: "Finance", terminationDate: "3/26/2026", terminationType: "Involuntary", reason: "Policy violation", annualSalary: "$126,800.00", paidThrough: "$156,443.09" },
+        { employee: "Leslie Knope", title: "Support Manager", department: "Support", terminationDate: "4/3/2026", terminationType: "Involuntary", reason: "Performance", annualSalary: "$91,250.00", paidThrough: "$174,818.28" },
+        { employee: "Donna Paulsen", title: "Customer Success Lead", department: "Customer Success", terminationDate: "4/10/2026", terminationType: "Involuntary", reason: "Restructure", annualSalary: "$109,300.00", paidThrough: "$214,607.44" },
+        { employee: "Harvey Specter", title: "Principal Engineer", department: "R & D", terminationDate: "4/17/2026", terminationType: "Involuntary", reason: "Role elimination", annualSalary: "$168,000.00", paidThrough: "$281,236.85" },
+        { employee: "Rachel Green", title: "UX Researcher", department: "R & D", terminationDate: "4/24/2026", terminationType: "Involuntary", reason: "Restructure", annualSalary: "$103,600.00", paidThrough: "$308,219.66" },
+        { employee: "Monica Geller", title: "Finance Analyst", department: "Finance", terminationDate: "5/1/2026", terminationType: "Involuntary", reason: "Role elimination", annualSalary: "$88,750.00", paidThrough: "$372,481.92" },
+        { employee: "Chandler Bing", title: "Software Engineer", department: "R & D", terminationDate: "5/8/2026", terminationType: "Involuntary", reason: "Performance", annualSalary: "$122,500.00", paidThrough: "$428,617.31" },
+        { employee: "Phoebe Buffay", title: "Staff Engineer", department: "R & D", terminationDate: "5/12/2026", terminationType: "Involuntary", reason: "Restructure", annualSalary: "$186,812.50", paidThrough: "$627,288.39" }
+      ]
+    },
     sections: [
       {
-        title: "Use case",
-        body: "Shows how a chat answer can return several external resources without treating every link as a generated artifact."
+        title: "Scope",
+        body: "Includes employees terminated from January 1, 2026 through May 12, 2026, with termination type, reason, annual salary, and payroll paid through termination date."
+      },
+      {
+        title: "Headcount comparison",
+        body: "January 1, 2026 headcount was 101 active employees. Current headcount on May 11, 2026 was 99 active employees."
+      },
+      {
+        title: "Breakdown",
+        body: "14 involuntary and 2 voluntary terminations, with R & D accounting for 9 of the 16 terminations."
+      }
+    ]
+  },
+  {
+    id: "severance-agreements-report",
+    label: "Severance agreements report",
+    eyebrow: "Workforce report",
+    icon: ArtifactTrayAssets.document,
+    tone: "berry",
+    summary: "A severance agreements report for employees with severance activity from January 1, 2026 through May 15, 2026.",
+    responseSummaryBlocks: [
+      {
+        title: "Severance agreements report",
+        summary: "I generated a severance agreements report for January 1 through May 15, 2026 and added it as a new report artifact."
+      }
+    ],
+    metrics: [
+      { value: "9", label: "severance agreements" },
+      { value: "$241K", label: "severance committed" },
+      { value: "7", label: "signed agreements" }
+    ],
+    tablePreview: {
+      title: "Severance agreements report",
+      displayStyle: "terminated",
+      exportActionLabel: "Export",
+      showOpenAction: true,
+      openAction: "mainCanvas",
+      openActionLabel: "Open",
+      compactRows: 6,
+      columns: [
+        { key: "employee", label: "Employee name", width: "176px" },
+        { key: "department", label: "Department", width: "156px" },
+        { key: "terminationDate", label: "Termination date", width: "148px" },
+        { key: "agreementDate", label: "Agreement date", width: "148px" },
+        { key: "status", label: "Status", width: "132px" },
+        { key: "severanceWeeks", label: "Severance weeks", type: "number", width: "148px" },
+        { key: "severanceAmount", label: "Severance amount", type: "number", width: "156px", compact: false },
+        { key: "paymentDate", label: "Payment date", width: "140px", compact: false }
+      ],
+      rows: [
+        { employee: "Geraldo Riveria", department: "R & D", terminationDate: "1/16/2026", agreementDate: "1/18/2026", status: "Signed", severanceWeeks: "8", severanceAmount: "$18,269.23", paymentDate: "1/31/2026" },
+        { employee: "Ricky Lake", department: "G&A", terminationDate: "1/22/2026", agreementDate: "1/25/2026", status: "Signed", severanceWeeks: "6", severanceAmount: "$9,490.38", paymentDate: "2/7/2026" },
+        { employee: "Sally Jesse Raphael", department: "Customer Success", terminationDate: "2/2/2026", agreementDate: "2/4/2026", status: "Signed", severanceWeeks: "10", severanceAmount: "$18,461.54", paymentDate: "2/21/2026" },
+        { employee: "Meredith Grey", department: "R & D", terminationDate: "3/3/2026", agreementDate: "3/6/2026", status: "Signed", severanceWeeks: "12", severanceAmount: "$28,615.38", paymentDate: "3/20/2026" },
+        { employee: "Donna Paulsen", department: "Customer Success", terminationDate: "4/10/2026", agreementDate: "4/12/2026", status: "Pending signature", severanceWeeks: "8", severanceAmount: "$16,815.38", paymentDate: "Pending" },
+        { employee: "Harvey Specter", department: "R & D", terminationDate: "4/17/2026", agreementDate: "4/19/2026", status: "Signed", severanceWeeks: "16", severanceAmount: "$51,692.31", paymentDate: "5/3/2026" },
+        { employee: "Rachel Green", department: "R & D", terminationDate: "4/24/2026", agreementDate: "4/27/2026", status: "Signed", severanceWeeks: "8", severanceAmount: "$15,938.46", paymentDate: "5/10/2026" },
+        { employee: "Monica Geller", department: "Finance", terminationDate: "5/1/2026", agreementDate: "5/4/2026", status: "In review", severanceWeeks: "6", severanceAmount: "$10,240.38", paymentDate: "Pending" },
+        { employee: "Phoebe Buffay", department: "R & D", terminationDate: "5/12/2026", agreementDate: "5/15/2026", status: "Signed", severanceWeeks: "20", severanceAmount: "$71,850.96", paymentDate: "5/29/2026" }
+      ]
+    },
+    sections: [
+      {
+        title: "Scope",
+        body: "Includes severance agreements created, reviewed, or signed from January 1, 2026 through May 15, 2026."
+      },
+      {
+        title: "Agreement status",
+        body: "7 agreements are signed, 1 is pending signature, and 1 is still in review."
+      },
+      {
+        title: "Payment summary",
+        body: "Signed and pending agreements total $241,374.02 in committed severance payments."
+      }
+    ]
+  },
+  {
+    id: "benefits-summary-link",
+    label: "Benefits summary",
+    eyebrow: "PDF · Updated June 4th, 2026",
+    icon: ArtifactTrayAssets.document,
+    tone: "berry",
+    summary: "A benefits summary link returned as part of the related resources list.",
+    externalLink: {
+      title: "Benefits summary",
+      meta: "PDF · Updated June 4th, 2026",
+      type: "pdf"
+    },
+    sections: [
+      {
+        title: "Source",
+        body: "Returned from the multiple-links response as a related benefits PDF."
+      }
+    ]
+  },
+  {
+    id: "open-enrollment-checklist-link",
+    label: "Open enrollment checklist",
+    eyebrow: "PDF · 6 pages",
+    icon: ArtifactTrayAssets.document,
+    tone: "berry",
+    summary: "An open enrollment checklist link returned as part of the related resources list.",
+    externalLink: {
+      title: "Open enrollment checklist",
+      meta: "PDF · 6 pages",
+      type: "pdf"
+    },
+    sections: [
+      {
+        title: "Source",
+        body: "Returned from the multiple-links response as a related enrollment PDF."
+      }
+    ]
+  },
+  {
+    id: "medical-plan-comparison-link",
+    label: "Medical plan comparison",
+    eyebrow: "Document · Current plan year",
+    icon: ArtifactTrayAssets.document,
+    tone: "berry",
+    summary: "A medical plan comparison document returned as part of the related resources list.",
+    externalLink: {
+      title: "Medical plan comparison",
+      meta: "Document · Current plan year",
+      type: "document"
+    },
+    sections: [
+      {
+        title: "Source",
+        body: "Returned from the multiple-links response as a current plan-year document."
+      }
+    ]
+  },
+  {
+    id: "hsa-fsa-contribution-guide-link",
+    label: "HSA and FSA contribution guide",
+    eyebrow: "Document · 2026 limits",
+    icon: ArtifactTrayAssets.document,
+    tone: "berry",
+    summary: "An HSA and FSA contribution guide returned as part of the related resources list.",
+    externalLink: {
+      title: "HSA and FSA contribution guide",
+      meta: "Document · 2026 limits",
+      type: "document"
+    },
+    sections: [
+      {
+        title: "Source",
+        body: "Returned from the multiple-links response as a 2026 contribution limits document."
       }
     ]
   },
@@ -1558,15 +1968,9 @@ const artifactItems = [
         summary: "I found 12 employees outside their target utilization band based on scheduled capacity versus assigned work."
       }
     ],
-    responseInsight: "You'll get more from this response by logging hours consistently in T&A",
-    responseMetrics: [
-      { value: "7", label: "under-utilized employees" },
-      { value: "5", label: "over-utilized employees" },
-      { value: "82%", label: "median utilization" }
-    ],
     tablePreview: {
       title: "Under and over utilized employees",
-      displayStyle: "tracker",
+      neutralHeader: true,
       compactRows: 5,
       columns: [
         { key: "employee", label: "Employee", width: "168px" },
@@ -1583,77 +1987,6 @@ const artifactItems = [
         { employee: "Miles Carter", department: "Marketing and Sales", utilization: { value: "51%", trend: "down" }, target: "80%", status: { label: "Under", tone: "neutral" }, action: "Assign campaign analysis" },
         { employee: "Sam Rivera", department: "Accounting", utilization: { value: "58%", trend: "down" }, target: "80%", status: { label: "Under", tone: "neutral" }, action: "Add close support tasks" },
         { employee: "Taylor Chen", department: "Clinical", utilization: { value: "62%", trend: "down" }, target: "85%", status: { label: "Under", tone: "neutral" }, action: "Review schedule availability" }
-      ]
-    },
-    dashboardDetail: {
-      title: "Employee Utilization - Review",
-      viewedAs: "Viewing as Nick (Owner)",
-      lastUpdated: "about 1 month ago",
-      filters: [
-        { label: "Saved filters", value: "New", icon: "document" },
-        { label: "Date range", value: "Current calendar year" }
-      ],
-      lineChart: {
-        title: "Utilization, over time",
-        yLabel: "Median utilization",
-        xLabel: "Timestamp (Year and Month)",
-        max: 120,
-        ticks: ["120%", "100%", "80%", "60%", "40%", "20%", "0"],
-        points: [
-          { label: "Jan 2026", value: 76 },
-          { label: "Feb 2026", value: 81 },
-          { label: "Mar 2026", value: 84 },
-          { label: "Apr 2026", value: 79 },
-          { label: "May 2026", value: 82 }
-        ]
-      },
-      barChart: {
-        title: "Utilization, by department",
-        yLabel: "Employee count",
-        xLabel: "Department",
-        max: 12,
-        ticks: ["12", "9", "6", "3", "0"],
-        segments: [
-          { key: "target", label: "At target", color: "#ffac1a" },
-          { key: "under", label: "Under-utilized", color: "#2f6fbd" },
-          { key: "over", label: "Over-utilized", color: "#a10f72" }
-        ],
-        bars: [
-          { label: "Clinical", values: { target: 7, under: 2, over: 2 } },
-          { label: "Admin", values: { target: 5, under: 1, over: 1 } },
-          { label: "Billing", values: { target: 4, under: 1, over: 1 } },
-          { label: "Sales", values: { target: 3, under: 2, over: 1 } },
-          { label: "Accounting", values: { target: 2, under: 1, over: 0 } }
-        ]
-      },
-      tables: [
-        {
-          title: "Employees outside target band",
-          meta: "12 rows",
-          columns: ["Employee", "Department", "Utilization", "Target", "Status", "Action"],
-          rows: [
-            ["Alex Morgan", "Clinical", "118%", "85%", "Over", "Rebalance high-acuity shifts"],
-            ["Priya Shah", "Administration", "112%", "85%", "Over", "Shift project work to open capacity"],
-            ["Nora Kim", "Billing", "107%", "85%", "Over", "Review backlog ownership"],
-            ["Miles Carter", "Marketing and Sales", "51%", "80%", "Under", "Assign campaign analysis"],
-            ["Sam Rivera", "Accounting", "58%", "80%", "Under", "Add close support tasks"],
-            ["Taylor Chen", "Clinical", "62%", "85%", "Under", "Review schedule availability"]
-          ]
-        },
-        {
-          title: "Highest utilization variance",
-          meta: "Showing 1-6 of 12",
-          columns: ["Group", "Variance", "Employees"],
-          rows: [
-            ["All", "+33 pts", "12"],
-            ["Over-utilized", "+27 pts", "5"],
-            ["Under-utilized", "-26 pts", "7"],
-            ["Clinical", "+18 pts", "4"],
-            ["Administration", "+14 pts", "2"],
-            ["Marketing and Sales", "-29 pts", "2"]
-          ],
-          pagination: ["1", "2", "3", "...", "6"]
-        }
       ]
     },
     sections: [
@@ -1673,76 +2006,81 @@ const artifactItems = [
   },
   {
     id: "promotion-review",
-    label: "Promotion review workflow",
+    label: "Good morning reminder",
     eyebrow: "Workflow",
     icon: ArtifactTrayAssets.lightning,
     tone: "berry",
-    summary: "A workflow that identifies active employees who have not had a promotion recorded in the last two years and routes them into manager calibration.",
-    responseSummaryBlocks: [
-      {
-        title: "Promotion review workflow",
-        summary: "I created a workflow to identify employees who have not been promoted in the last 2 years and route them into manager review."
-      }
-    ],
-    metrics: [
-      { value: "42", label: "employees identified" },
-      { value: "18", label: "over 30 months since promotion" },
-      { value: "6", label: "high performers to review" }
-    ],
+    summary: "A draft workflow that sends Alicia a Good morning reminder notification at 8:00 AM in her work-location timezone.",
+    responseLayout: "workflowReminder",
+    workflowResponse: {
+      createdText: "Create recipient group 'Alicia Warren Hossein' (row 1) Create function 'Send Good Morning Reminder Notification' (row 1)\n\nRuns as an async workflow function. Create workflow 'Good morning reminder' (row 1)",
+      aboutTitle: "About these results:",
+      aboutItems: [
+        "The workflow was created as a draft; it has not been activated."
+      ],
+      sections: [
+        {
+          title: "When it will run",
+          body: "This workflow runs once on May 29, 2026 at 8:00 AM in Alicia's work-location timezone, America/Chicago. It is not scoped to employee records and does not fan out across employees."
+        },
+        {
+          title: "What it will do",
+          body: "Sends Alicia a Rippling app notification with the subject 'Good morning' and the message 'good morning'."
+        },
+        {
+          title: "Step-by-step details",
+          body: "Sends Alicia a Rippling app notification with the subject 'Good morning' and the message 'good morning'."
+        }
+      ]
+    },
     workflowPreview: {
-      title: "Workflow",
-      triggerTitle: "When it will run",
-      trigger: "Talent review cycle starts and active employees have no promotion recorded in the last 24 months",
-      actionTitle: "What it will do",
-      action: "Creates a promotion review list, enriches each employee with performance and compensation context, and sends manager calibration tasks for high-priority candidates.",
-      linkLabel: "View workflow"
+      displayStyle: "linkCard",
+      title: "Good morning reminder",
+      kindLabel: "Workflows",
+      status: "Draft",
+      openActionLabel: "Open"
     },
     workflowDetail: {
-      title: "Identify employees not promoted in last 2 years",
-      createdBy: "Terri Clark",
-      lastVersionCreatedOn: "May 27, 2026, 2:39 PM CST",
-      version: "v4",
+      title: "Good morning reminder",
+      createdBy: "Alicia Warren Hossein",
+      lastVersionCreatedOn: "May 29, 2026, 8:00 AM CST",
+      version: "Draft",
       nodes: [
         {
           icon: "sparkle",
           title: "Workflow trigger",
-          description: "Talent review cycle starts",
-          meta: "Some filter(s) applied"
+          description: "Runs once on May 29, 2026 at 8:00 AM",
+          meta: "America/Chicago"
         },
         {
-          icon: "data",
-          title: "Query Rippling data",
-          description: "Find active employees without promotion in 24 months"
+          icon: "users",
+          title: "Create recipient group",
+          description: "Alicia Warren Hossein"
         },
         {
-          icon: "data",
-          title: "Query Rippling data",
-          description: "Add latest rating, level, and compa-ratio"
+          icon: "bell",
+          title: "Send notification",
+          description: "Subject: Good morning"
         },
         {
           icon: "document",
-          title: "Create review artifact",
-          description: "Build promotion calibration candidate list"
-        },
-        {
-          icon: "chat",
-          title: "Notify managers",
-          description: "Send calibration tasks to managers"
+          title: "Keep as draft",
+          description: "Workflow has not been activated"
         }
       ]
     },
     sections: [
       {
-        title: "Identification logic",
-        body: "Include active employees whose last promotion date is blank or older than 24 months, excluding new hires and employees already in an open promotion cycle."
+        title: "When it will run",
+        body: "Runs once on May 29, 2026 at 8:00 AM in Alicia's work-location timezone."
       },
       {
-        title: "Review columns",
-        body: "Employee, manager, department, level, tenure, last promotion date, last rating, compa-ratio, and recommended next action."
+        title: "What it will do",
+        body: "Sends Alicia a Rippling app notification with the subject 'Good morning' and the message 'good morning'."
       },
       {
-        title: "Follow-up",
-        body: "Prioritize high performers and long-tenured employees for manager calibration before the next talent review."
+        title: "Status",
+        body: "The workflow was created as a draft and has not been activated."
       }
     ]
   }
@@ -1754,7 +2092,7 @@ function getArtifactById(artifactId) {
 
 function isTrayArtifact(artifactId) {
   const artifact = getArtifactById(artifactId);
-  return Boolean(artifact && (artifact.reportPreview || artifact.tablePreview || artifact.workflowPreview || artifact.pdfPreview || artifact.dashboardDetail));
+  return Boolean(artifact && (artifact.reportPreview || artifact.tablePreview || artifact.workflowPreview || artifact.pdfPreview || artifact.dashboardDetail || artifact.externalLink));
 }
 
 function getEditingArtifactId() {
@@ -1766,11 +2104,29 @@ function isArtifactPromoted(artifactId) {
 }
 
 function getTrayArtifactIds(artifactIds) {
-  return getValidArtifactIds(artifactIds).filter(isTrayArtifact);
+  const expandedArtifactIds = getValidArtifactIds(artifactIds).flatMap((artifactId) => {
+    const artifact = getArtifactById(artifactId);
+    if (artifact?.externalLinks?.length) {
+      return artifact.externalLinks.map((link) => link.artifactId).filter(Boolean);
+    }
+
+    return [artifactId];
+  });
+
+  return getValidArtifactIds(expandedArtifactIds).filter(isTrayArtifact);
 }
 
 function getCurrentArtifactItems() {
   return prototypeState.artifactTrayIds.map(getArtifactById).filter(Boolean);
+}
+
+function ArtifactTrayEmptyState() {
+  return `
+    <div class="artifact-empty-card" data-node-id="4487:34481">
+      <p>ARTIFACTS &amp; OUTPUTS</p>
+      <span>No artifacts yet</span>
+    </div>
+  `;
 }
 
 function ArtifactTray({ mode = "component" } = {}) {
@@ -1778,16 +2134,17 @@ function ArtifactTray({ mode = "component" } = {}) {
   const trayHeight = Math.min(88 + Math.max(items.length, 1) * 30, 360);
   const isSidebarTray = mode === "sidebar";
   return `
-    <aside class="artifact-tray artifact-tray--${mode} ${items.length > 3 ? "artifact-tray--has-many" : ""}" style="--artifact-tray-height: ${trayHeight}px" data-node-id="1682:16369" aria-label="Artifacts">
-      <div class="artifact-tray__content">
-        <div class="artifact-tray__header">
-          <h2>Artifacts</h2>
-          ${isSidebarTray ? `<span class="artifact-tray__count" aria-label="${items.length} artifacts">${items.length}</span>` : ""}
-        </div>
-        <div class="artifact-tray__list">
-          ${
-            items.length
-              ? items
+    <aside class="artifact-tray artifact-tray--${mode} ${items.length > 3 ? "artifact-tray--has-many" : ""} ${items.length ? "" : "artifact-tray--empty"}" style="--artifact-tray-height: ${trayHeight}px" data-node-id="1682:16369" aria-label="Artifacts">
+      ${
+        items.length
+          ? `
+            <div class="artifact-tray__content">
+              <div class="artifact-tray__header">
+                <h2>Artifacts</h2>
+                ${isSidebarTray ? `<span class="artifact-tray__count" aria-label="${items.length} artifacts">${items.length}</span>` : ""}
+              </div>
+              <div class="artifact-tray__list">
+                ${items
                   .map(
                     (item) => `
                       <button class="artifact-item" type="button" data-artifact-id="${item.id}">
@@ -1798,11 +2155,12 @@ function ArtifactTray({ mode = "component" } = {}) {
                       </button>
                     `
                   )
-                  .join("")
-              : '<p class="artifact-empty">Generated artifacts will appear here.</p>'
-          }
-        </div>
-      </div>
+                  .join("")}
+              </div>
+            </div>
+          `
+          : ArtifactTrayEmptyState()
+      }
       ${
         isSidebarTray
           ? ""
@@ -1831,7 +2189,7 @@ function ArtifactTakeoverPanel({ mode = "sidebar", variant = "takeover" } = {}) 
     ? ""
     : iconButton("close", "Close artifacts", "artifact-takeover__close", 'data-action="hide-artifact-tray"');
   return `
-    <aside class="artifact-takeover artifact-takeover--${mode}${variantClass} ${prototypeState.artifactTrayOpen ? "is-open" : "is-hidden"}" aria-label="Artifacts" ${isPushUp ? 'data-node-id="2014:32301"' : ""}>
+    <aside class="artifact-takeover artifact-takeover--${mode}${variantClass} ${items.length ? "" : "artifact-takeover--empty"} ${prototypeState.artifactTrayOpen ? "is-open" : "is-hidden"}" aria-label="Artifacts" ${isPushUp ? 'data-node-id="2014:32301"' : ""}>
       <div class="artifact-takeover__header">
         <div class="artifact-takeover__title">
           <p>Artifacts</p>
@@ -1863,7 +2221,7 @@ function ArtifactTakeoverPanel({ mode = "sidebar", variant = "takeover" } = {}) 
                   `
                 )
                 .join("")
-            : '<p class="artifact-takeover__empty">Generated artifacts will appear here.</p>'
+            : ArtifactTrayEmptyState()
         }
       </div>
     </aside>
@@ -2249,6 +2607,7 @@ function ArtifactReader({ artifactId = null, mode = prototypeState.artifactMode,
       <div class="artifact-reader__body">
         <p class="artifact-reader__summary">${escapeHtml(artifact.summary)}</p>
         ${artifact.reportPreview || artifact.tablePreview ? ArtifactPreview({ artifactId: artifact.id, variant: "large" }) : ""}
+        ${artifact.externalLinks?.length ? ExternalLinksList(artifact) : ""}
         ${
           metrics.length
             ? `
@@ -2383,6 +2742,7 @@ function ChatPanel({ mode = "sidebar" } = {}) {
   const artifactClass = isFull && usesSideArtifactSurface ? ` ai-panel--artifact-${prototypeState.artifactMode}` : "";
   const sideTrayClass = !isFull ? ` ai-panel--side-tray-${prototypeState.sideTrayMode}` : "";
   const chatTitle = conversationData[prototypeState.activeConversationId]?.title || "{{Chat title}}";
+  const historyTooltip = prototypeState.chatHistoryOpen || showChatHistory ? "Hide history" : "View history";
   return `
     <div class="ai-panel-wrap ai-panel-wrap--${mode}" data-node-id="${nodeId}">
       ${showChatHistory ? ChatHistoryPanel({ variant: "rail" }) : ""}
@@ -2392,10 +2752,10 @@ function ChatPanel({ mode = "sidebar" } = {}) {
           <div class="chat-panel-nav__left">
             ${
               isFull
-                ? iconButton("menu", "Menu")
+                ? iconButton("menu", historyTooltip)
                 : iconButton(
                     "menu",
-                    "All chats",
+                    historyTooltip,
                     `chat-history-trigger ${prototypeState.chatHistoryOpen ? "is-active" : ""}`,
                     `data-action="toggle-chat-history" aria-pressed="${prototypeState.chatHistoryOpen}"`
                   )
@@ -2404,12 +2764,12 @@ function ChatPanel({ mode = "sidebar" } = {}) {
           </div>
           <div class="chat-panel-nav__actions">
             ${canShowArtifactTray ? ChatArtifactMenu() : ""}
-            ${iconButton("commentPlus", "New chat", "", 'data-action="new-chat"')}
+            ${iconButton("commentPlus", "New message", "", 'data-action="new-chat"')}
             ${
               isFull
-                ? iconButton("close", "Close full screen chat", "", 'data-action="collapse-chat"')
-                : `${iconButton("expand", "Expand", "", 'data-action="expand-chat"')}
-                   ${iconButton("close", "Close side chat", "", 'data-action="close-side-chat"')}`
+                ? iconButton("close", "Close", "", 'data-action="collapse-chat"')
+                : `${iconButton("expand", "Full screen", "", 'data-action="expand-chat"')}
+                   ${iconButton("close", "Close", "", 'data-action="close-side-chat"')}`
             }
           </div>
         </div>
@@ -2462,10 +2822,9 @@ function ChatPanel({ mode = "sidebar" } = {}) {
 function WorkbenchPage() {
   if (prototypeState.leftArtifactBuildState === "loading" && prototypeState.leftArtifactId) {
     return `
-      <div class="workspace-surface workspace-surface--loading" aria-live="polite" aria-label="Building artifact">
-        <div class="workspace-loader" role="status">
+      <div class="workspace-surface workspace-surface--loading" aria-live="polite" aria-label="Loading artifact">
+        <div class="workspace-loader" role="status" aria-label="Loading artifact">
           <span class="workspace-loader__spinner" aria-hidden="true"></span>
-          <span>Building artifact</span>
         </div>
       </div>
     `;
@@ -2555,6 +2914,9 @@ const prototypeState = {
 
 let snackbarTimer = null;
 let leftArtifactBuildTimer = null;
+let assistantResponseTimer = null;
+let scriptedResponseTimers = [];
+let assistantResponseRequestId = 0;
 
 const chatLayoutMotion = {
   duration: 200,
@@ -2601,6 +2963,18 @@ function clearLeftArtifactBuildState() {
 
   prototypeState.leftArtifactId = null;
   prototypeState.leftArtifactBuildState = "idle";
+}
+
+function clearPendingAssistantResponse() {
+  assistantResponseRequestId += 1;
+
+  if (assistantResponseTimer) {
+    window.clearTimeout(assistantResponseTimer);
+    assistantResponseTimer = null;
+  }
+
+  scriptedResponseTimers.forEach((timer) => window.clearTimeout(timer));
+  scriptedResponseTimers = [];
 }
 
 function bindTopNavInteractions() {
@@ -2782,10 +3156,12 @@ function resolveArtifactFromText(text) {
   if (normalized.includes("40") || normalized.includes("overtime") || (normalized.includes("policy") && normalized.includes("hour"))) return "hours-policy";
   if (normalized.includes("t&a") || normalized.includes("time and attendance") || (normalized.includes("start") && normalized.includes("finish"))) return "time-attendance-report";
   if ((normalized.includes("benefits") || normalized.includes("benefit")) && normalized.includes("pdf")) return "benefits-pdf";
+  if (normalized.includes("severance")) return "severance-agreements-report";
+  if (normalized.includes("terminat") || (normalized.includes("employees") && normalized.includes("report"))) return "terminated-employees-report";
   if (normalized.includes("links") && (normalized.includes("multiple") || normalized.includes("list"))) return "multiple-links";
   if (normalized.includes("turnover") || normalized.includes("attrition")) return "turnover-rate-year";
   if (normalized.includes("utilized") || normalized.includes("utilization") || (normalized.includes("under") && normalized.includes("over"))) return "employee-utilization-review";
-  if (normalized.includes("promot")) return "promotion-review";
+  if (normalized.includes("good morning") || normalized.includes("reminder")) return "promotion-review";
 
   return null;
 }
@@ -2796,7 +3172,7 @@ function buildAssistantMessage(artifactId) {
   if (!artifact) {
     return {
       role: "assistant",
-      body: "I can help with that. Try one of the suggested prompts or ask for a policy, T&A report, benefits PDF, or promotion review and I will create the matching artifact."
+      body: "I can help with that. Try one of the suggested prompts or ask for a policy, T&A report, benefits PDF, or Good morning reminder and I will create the matching artifact."
     };
   }
 
@@ -2805,9 +3181,11 @@ function buildAssistantMessage(artifactId) {
     "time-attendance-report": "I built a T&A report outline with start times, finish times, actual hours, and exception fields. Use View to open the artifact or Edit to work on it in the canvas.",
     "benefits-pdf": "I found your current benefits summary and prepared a PDF artifact for review.",
     "multiple-links": "I found several related resources and grouped them into a link list.",
+    "terminated-employees-report": "I created the terminated employees report for January 1 through May 12, 2026.",
+    "severance-agreements-report": "I generated a severance agreements report for January 1 through May 15, 2026.",
     "turnover-rate-year": "I calculated your turnover rate for the year and broke it out by quarter so you can see where attrition accelerated.",
     "employee-utilization-review": "I identified under and over utilized employees based on scheduled capacity versus assigned work, with recommended next actions for each group.",
-    "promotion-review": "I created a promotion review workflow that finds employees who have not had a promotion recorded in the last 2 years and routes them into manager calibration. Use View to open the workflow."
+    "promotion-review": "I created the Good morning reminder workflow as a draft."
   };
 
   return {
@@ -2824,26 +3202,83 @@ function buildAssistantMessage(artifactId) {
   };
 }
 
+function getScriptedFollowUpMessages(artifactId) {
+  if (artifactId !== "terminated-employees-report") return [];
+
+  return [
+    {
+      role: "user",
+      body: "create a report of all severance agreements from January 1, 2026 through May 15, 2026"
+    },
+    {
+      role: "assistant",
+      body: "Do you want to update \"Terminated employees report\"?",
+      responseLayout: "reportUpdateConfirmation",
+      confirmation: {
+        title: "Do you want to update “Terminated employees report”",
+        options: [
+          "Yes, update the report",
+          "No, create a different report"
+        ]
+      }
+    },
+    {
+      role: "user",
+      body: "Yes"
+    },
+    buildAssistantMessage("severance-agreements-report")
+  ];
+}
+
+function cloneChatMessage(message) {
+  return JSON.parse(JSON.stringify(message));
+}
+
+function queueScriptedFollowUps(artifactId, requestId) {
+  const followUps = getScriptedFollowUpMessages(artifactId);
+  if (!followUps.length) return;
+
+  const shouldReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let index = 0;
+
+  const scheduleNext = () => {
+    if (index >= followUps.length) return;
+
+    const timer = window.setTimeout(() => {
+      scriptedResponseTimers = scriptedResponseTimers.filter((item) => item !== timer);
+      if (requestId !== assistantResponseRequestId) return;
+
+      const nextMessage = cloneChatMessage(followUps[index]);
+      index += 1;
+      prototypeState.chatMessages = [
+        ...prototypeState.chatMessages,
+        nextMessage
+      ];
+      addArtifactsToTray(nextMessage.artifactId ? [nextMessage.artifactId] : []);
+      renderAppLayout();
+      scheduleNext();
+    }, shouldReduceMotion ? 0 : 700);
+
+    scriptedResponseTimers.push(timer);
+  };
+
+  scheduleNext();
+}
+
 function getValidArtifactIds(artifactIds) {
   return [...new Set(artifactIds.filter((artifactId) => getArtifactById(artifactId)))];
 }
 
 function addArtifactsToTray(artifactIds) {
   const nextArtifactIds = [...prototypeState.artifactTrayIds];
-  let addedArtifact = false;
 
-  getValidArtifactIds(artifactIds).forEach((artifactId) => {
+  getTrayArtifactIds(artifactIds).forEach((artifactId) => {
     if (!nextArtifactIds.includes(artifactId)) {
       nextArtifactIds.push(artifactId);
-      addedArtifact = true;
     }
   });
 
   prototypeState.artifactTrayIds = nextArtifactIds;
-
-  if (addedArtifact && !prototypeState.artifactTrayUserClosed) {
-    prototypeState.artifactTrayOpen = true;
-  }
 }
 
 function revealArtifactTray() {
@@ -2871,6 +3306,8 @@ function loadConversation(conversationId) {
     return;
   }
 
+  clearPendingAssistantResponse();
+
   prototypeState.activeConversationId = conversationId;
   prototypeState.chatMessages = conversation.messages.map((message) => ({ ...message }));
   prototypeState.composerDraft = "";
@@ -2893,12 +3330,16 @@ function sendChatMessage(text, preferredArtifactId = null) {
   const body = text.trim();
   if (!body) return;
 
+  clearPendingAssistantResponse();
+
   const artifactId = preferredArtifactId || resolveArtifactFromText(body);
   const artifact = getArtifactById(artifactId);
+  const assistantMessage = buildAssistantMessage(artifactId);
+  const requestId = assistantResponseRequestId;
+
   prototypeState.chatMessages = [
     ...prototypeState.chatMessages,
-    { role: "user", body },
-    buildAssistantMessage(artifactId)
+    { role: "user", body }
   ];
   prototypeState.composerDraft = "";
   prototypeState.activeConversationId = null;
@@ -2907,17 +3348,30 @@ function sendChatMessage(text, preferredArtifactId = null) {
   prototypeState.artifactSurfaceMode = "view";
   prototypeState.artifactReturnMode = null;
   clearLeftArtifactBuildState();
-  addArtifactsToTray(artifact && isTrayArtifact(artifact.id) ? [artifact.id] : []);
   prototypeState.artifactMenuOpen = false;
   prototypeState.activeArtifactActionMenuId = null;
   prototypeState.editingArtifactId = null;
 
   renderAppLayout();
+
+  const shouldReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  assistantResponseTimer = window.setTimeout(() => {
+    if (requestId !== assistantResponseRequestId) return;
+
+    prototypeState.chatMessages = [
+      ...prototypeState.chatMessages,
+      assistantMessage
+    ];
+    addArtifactsToTray(artifact ? [artifact.id] : []);
+    assistantResponseTimer = null;
+    renderAppLayout();
+    queueScriptedFollowUps(artifactId, requestId);
+  }, shouldReduceMotion ? 0 : 650);
 }
 
 function handlePromptClick(artifactId) {
   const prompt = promptItems.find((item) => item.artifactId === artifactId);
-  sendChatMessage(prompt?.label || "", artifactId);
+  sendChatMessage(prompt?.chatText || prompt?.label || "", artifactId);
 }
 
 window.handlePromptClick = handlePromptClick;
@@ -2925,7 +3379,50 @@ window.handlePromptClick = handlePromptClick;
 function runPromptButton(button) {
   const artifactId = button.dataset.promptArtifactId;
   const prompt = promptItems.find((item) => item.artifactId === artifactId);
-  sendChatMessage(prompt?.label || button.textContent, artifactId);
+  sendChatMessage(prompt?.chatText || prompt?.label || button.textContent, artifactId);
+}
+
+function resetToDefaultChat() {
+  clearPendingAssistantResponse();
+  clearLeftArtifactBuildState();
+
+  if (snackbarTimer) {
+    window.clearTimeout(snackbarTimer);
+    snackbarTimer = null;
+  }
+
+  prototypeState.chatMode = "sidebar";
+  prototypeState.artifactPreset = "nearTerm";
+  prototypeState.artifactMode = "onLeft";
+  prototypeState.sideTrayMode = "pushUp";
+  prototypeState.chatMessages = [];
+  prototypeState.composerDraft = "";
+  prototypeState.activeConversationId = null;
+  prototypeState.activeArtifactId = null;
+  prototypeState.artifactSurfaceMode = "view";
+  prototypeState.artifactReturnMode = null;
+  prototypeState.artifactTrayIds = [];
+  prototypeState.artifactTrayOpen = false;
+  prototypeState.artifactTrayUserClosed = false;
+  prototypeState.artifactMenuOpen = false;
+  prototypeState.activeArtifactActionMenuId = null;
+  prototypeState.settingsMenuOpen = false;
+  prototypeState.chatHistoryOpen = false;
+  prototypeState.workbenchArtifactId = null;
+  prototypeState.editingArtifactId = null;
+  prototypeState.leftArtifactId = null;
+  prototypeState.leftArtifactBuildState = "idle";
+  prototypeState.snackbar = null;
+
+  renderApp();
+}
+
+function handleDefaultResetClick(event) {
+  const resetTarget = event.target.closest?.('[data-action="reset-to-default-chat"], .rippling-mark');
+  if (!resetTarget) return;
+
+  event.preventDefault();
+  resetToDefaultChat();
 }
 
 function editArtifactInWorkbench(artifactId) {
@@ -3094,17 +3591,6 @@ function dismissSnackbar() {
 }
 
 function bindLayoutInteractions() {
-  document.querySelector(".chat-demo")?.addEventListener(
-    "pointerup",
-    (event) => {
-      const button = event.target.closest?.("[data-prompt-artifact-id]");
-      if (!button) return;
-      event.preventDefault();
-      runPromptButton(button);
-    },
-    { capture: true }
-  );
-
   document.querySelector('[data-action="nav-hover-zone"]')?.addEventListener("mouseenter", () => {
     setNavExpanded(true);
   });
@@ -3139,6 +3625,21 @@ function bindLayoutInteractions() {
       if (event.key !== "Enter" && event.key !== " ") return;
       event.preventDefault();
       runChatOutputAction(button, "view");
+    });
+  });
+
+  document.querySelectorAll('[data-action="open-main-canvas-artifact"]').forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const artifactId = button.dataset.artifactId;
+      if (!artifactId) return;
+
+      prototypeState.artifactTrayOpen = false;
+      prototypeState.artifactMenuOpen = false;
+      prototypeState.activeArtifactActionMenuId = null;
+      openArtifactOnLeft(artifactId);
     });
   });
 
@@ -3180,6 +3681,22 @@ function bindLayoutInteractions() {
         await copyArtifactToClipboard(artifactId);
         showSnackbar("Copied to clipboard");
       }
+    });
+  });
+
+  document.querySelectorAll('[data-action="scroll-table-next"]').forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const preview = button.closest(".table-preview");
+      const scroller = preview?.querySelector(".table-preview__scroller");
+      if (!scroller) return;
+
+      scroller.scrollBy({
+        left: Math.max(240, Math.round(scroller.clientWidth * 0.72)),
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+      });
     });
   });
 
@@ -3228,6 +3745,7 @@ function bindLayoutInteractions() {
 
   document.querySelectorAll('[data-action="new-chat"]').forEach((button) => {
     button.addEventListener("click", () => {
+      clearPendingAssistantResponse();
       prototypeState.chatMessages = [];
       prototypeState.composerDraft = "";
       prototypeState.activeConversationId = null;
@@ -3385,6 +3903,19 @@ function setArtifactTrayOpen(isOpen, { userInitiated = false } = {}) {
     pushUpToggle.setAttribute("aria-expanded", `${isOpen}`);
     pushUpToggle.innerHTML = svgIcon(isOpen ? "chevronUp" : "chevronDown");
   }
+}
+
+function handleArtifactTrayOutsidePointerDown(event) {
+  if (!prototypeState.artifactTrayOpen || prototypeState.sideTrayMode !== "pushUp") return;
+
+  const tray = document.querySelector(".artifact-takeover--push-up");
+  if (!tray?.classList.contains("is-open")) return;
+
+  const target = event.target;
+  const trigger = target.closest?.('[data-action="toggle-artifact-tray"]');
+  if (trigger || tray.contains(target)) return;
+
+  setArtifactTrayOpen(false, { userInitiated: true });
 }
 
 function setChatHistoryOpen(isOpen) {
@@ -3597,6 +4128,14 @@ function positionSnackbarHost() {
   host.style.setProperty("--snackbar-x-offset", "0");
 }
 
+function handleWindowResize() {
+  positionSnackbarHost();
+
+  if (prototypeState.artifactTrayOpen && document.querySelector(".artifact-takeover--push-up")) {
+    setArtifactTrayOpen(false);
+  }
+}
+
 function renderWorkbenchOnly() {
   const workbench = document.querySelector(".workbench");
   if (!workbench) {
@@ -3617,16 +4156,19 @@ function initializeFromUrl() {
   const prompt = promptItems.find((item) => item.artifactId === promptId);
   if (!prompt) return;
 
-  const artifact = getArtifactById(prompt.artifactId);
-  prototypeState.chatMessages = [
-    { role: "user", body: prompt.label },
-    buildAssistantMessage(prompt.artifactId)
+  const seededMessages = [
+    { role: "user", body: prompt.chatText || prompt.label },
+    buildAssistantMessage(prompt.artifactId),
+    ...getScriptedFollowUpMessages(prompt.artifactId).map(cloneChatMessage)
   ];
-  prototypeState.artifactTrayIds = getTrayArtifactIds(artifact ? [artifact.id] : []);
-  prototypeState.artifactTrayOpen = prototypeState.artifactTrayIds.length > 0 && !prototypeState.artifactTrayUserClosed;
+  prototypeState.chatMessages = seededMessages;
+  prototypeState.artifactTrayIds = getTrayArtifactIds(seededMessages.map((message) => message.artifactId).filter(Boolean));
+  prototypeState.artifactTrayOpen = false;
   prototypeState.activeConversationId = null;
 }
 
 initializeFromUrl();
 renderApp();
-window.addEventListener("resize", positionSnackbarHost);
+window.addEventListener("resize", handleWindowResize);
+document.addEventListener("click", handleDefaultResetClick);
+document.addEventListener("pointerdown", handleArtifactTrayOutsidePointerDown, true);
